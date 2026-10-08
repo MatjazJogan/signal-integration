@@ -1,19 +1,19 @@
 # signal-integration
 
-Interactive demonstration of
+Interactive companion to
 
-> M. Jogan and A. A. Stocker, **Signal integration in human visual speed perception**,
-> *Journal of Neuroscience* 35(25):9381–9390, 2015. doi:[10.1523/JNEUROSCI.4801-14.2015](https://doi.org/10.1523/JNEUROSCI.4801-14.2015)
+> M. Jogan and A. A. Stocker (2015). **Signal integration in human visual speed perception.**
+> *Journal of Neuroscience* 35(25):9381–9390. doi:[10.1523/JNEUROSCI.4801-14.2015](https://doi.org/10.1523/JNEUROSCI.4801-14.2015)
 
 **▶ [Run the experiment](https://matjazjogan.github.io/signal-integration/)**
 
-A moving object drives many spatiotemporal frequency channels at once, yet we perceive a single speed. The paper asked how the visual system combines these channels, and found that human speed percepts are predicted by a Bayesian observer that integrates the channel likelihoods optimally before applying a prior for slow speeds, and not by observers that rely on the most reliable channel or average per-channel estimates.
+A moving object excites many spatiotemporal frequency channels at once, yet we perceive a single speed. In this study we asked how the visual system combines these signals. We measured speed discrimination for stimuli that each targeted a single channel, fitted a Bayesian observer with a prior for slow speeds, and predicted perception of stimuli that drive several channels at once. Only an observer that integrates the channel likelihoods optimally, before applying the prior, accounted for the data; observers that rely on the most reliable channel or average per-channel estimates did not.
 
-`index.html` reproduces this logic with two spatial-frequency channels in a single self-contained page (no build step, no dependencies beyond Google Fonts).
+`index.html` lets anyone repeat a two-channel version of the experiment in the browser and see the same analysis applied to their own responses. It is a single self-contained page.
 
 ## Experiment
 
-Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 ω<sub>s</sub>, 4° raised-cosine aperture, 6° eccentricity, 600 ms). The test always drifts at 3°/s; the reference speed follows two interleaved staircases per condition. After each presentation a white square marks one grating and the observer reports whether the marked grating was faster or slower, which keeps response bias out of the measurement.
+Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 ω<sub>s</sub>, 4° raised-cosine aperture, 6° eccentricity, 600 ms). The test drifts at 3°/s, and the reference speed follows two interleaved staircases per condition. A white square then marks one grating and the observer reports whether it was faster or slower, which keeps response bias out of the measurement.
 
 | Run | Conditions (test / reference) | Role |
 | --- | --- | --- |
@@ -21,7 +21,7 @@ Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 
 | 2 | B / B, B / R, R / R | fit |
 | 3 | A+B / A+B, A+B / R | predicted |
 
-A and B are the two channels (default 1 and 4 c/°); R, the common reference, is the A+B compound at higher contrast. The page includes a screen calibration (bank-card match and viewing distance) to express stimuli in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
+A and B are single-channel gratings (1 and 4 c/° by default) and R is a broadband reference (octave bands from 0.5 to 4 c/°, our ABCD stimulus) at high contrast. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
 
 ## Model
 
@@ -33,22 +33,18 @@ Speed is represented as s = log(1 + v/0.3). Each channel contributes a Gaussian 
 | Most reliable channel | s + aσ<sub>min</sub>² | σ<sub>min</sub>² |
 | Channel averaging | s + (a/k) Σ σ<sub>X</sub>² | Σ σ<sub>X</sub>² / k² |
 
-All three are identical for single-channel stimuli, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once (maximum likelihood, 2AFC signal-detection model of Eq. 16) to runs 1 and 2. Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, placed between chance (a coin flip) and the data (empirical response proportions).
+The models coincide for single channels, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once, by maximum likelihood, to runs 1 and 2. Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between chance and the empirical response proportions.
 
-The *Simulated observer* tab runs the same procedure on a model observer with chosen parameters and integration rule, including a 50-session recovery test. With the standard session (280 trials) and parameters typical of the original observers, the true rule predicts best in about 55–70% of sessions.
+The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²). A sharp reference therefore matters, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2. In simulations with the standard session (280 trials) and σ<sub>R</sub> ≈ 0.18, optimal integration is separated from the most reliable channel in 70–90% of sessions. The *Simulated observer* tab runs the full procedure on a model observer, including a 50-session recovery test.
 
-## Collecting data
+A correction to the paper: in Fig. 3b the SD of the balanced psychometric function should read √2·σ<sub>Test</sub>, not σ<sub>Test</sub>/√2, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis uses √2·σ<sub>Test</sub>.
 
-Finished sessions are always offered for download as JSON and kept in the browser's local storage. To collect them centrally, send each session to a Google Sheet through a small Apps Script web app (no server or database):
+## Data collection
 
-1. Create a Google Sheet, open **Extensions → Apps Script**, and replace the editor contents with [`apps-script/Code.gs`](apps-script/Code.gs). Save.
-2. **Deploy → New deployment → Web app**. Set *Execute as* to **Me** and *Who has access* to **Anyone**. Authorise when prompted and copy the web-app URL (it ends in `/exec`).
-3. In `index.html`, set `const SHEET_ENDPOINT = '<that URL>';` and push. Opening the URL in a browser shows a short "running" message.
+Each finished session is posted to a Google Sheet through a Google Apps Script web app ([`apps-script/Code.gs`](apps-script/Code.gs)), and can also be downloaded as JSON and re-analysed on the page. Each row holds the session identifiers, fitted parameters and per-model log-likelihoods, followed by the settings and the full trial list as JSON. Trials are stored as `[cond, ref_minus_test_logspeed, ref_seen_faster, marked_side, test_side, drift_dir, rt_ms]`, with conditions indexed as in `conditions`.
 
-Each session becomes one row of the `sessions` sheet: identifiers, the fitted parameters and per-model negative log-likelihoods, followed by the settings and the full trial list as JSON. Trials are stored as `[cond, ref_minus_test_logspeed, ref_seen_faster, marked_side, test_side, drift_dir, rt_ms]`, with conditions indexed as in `conditions`. A saved session (downloaded JSON) can be re-analysed with **Analyse a saved session** on the page.
-
-Anyone with the URL can post to the sheet, so treat it as a collection inbox rather than a trusted record, and collect participant codes rather than names.
+To collect into a different sheet: create the sheet, paste `Code.gs` into **Extensions → Apps Script**, deploy it as a web app (*Execute as* **Me**, *Who has access* **Anyone**), and set `SHEET_ENDPOINT` in `index.html` to the deployment URL. When changing the script, deploy a new version of the existing deployment so that the URL stays the same.
 
 ## Hosting
 
-The page is served by GitHub Pages from the root of the default branch (**Settings → Pages → Deploy from a branch → `main` / `/ (root)`**).
+The page is served by GitHub Pages from the root of the `main` branch.
