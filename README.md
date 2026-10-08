@@ -23,7 +23,7 @@ Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 
 | 2 | B / B, B / R, R / R | fit |
 | 3 | A+B / A+B, A+B / R | predicted |
 
-A and B are single-channel gratings (1 and 4 c/° by default) and R is a broadband reference (octave bands from 0.5 to 4 c/°, our ABCD stimulus) at high contrast. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
+A and B are single-channel gratings, by default 1 and 2 c/° at 9% and 13% contrast, the values of our original calibration; R is a broadband reference (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast. The page measures the display refresh rate and caps reference speeds so that no grating aliases in time. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
 
 ## Model
 

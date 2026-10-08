@@ -1,5 +1,5 @@
 /**
- * Signal Integration Lab: collect finished sessions in a Google Sheet.
+ * Signal integration in human visual speed perception: collect finished sessions in a Google Sheet.
  *
  * Deploy this script as a web app bound to a Google Sheet (see README, "Collecting data").
  * Each POST from the demo page appends one row: summary columns for quick inspection,
@@ -37,5 +37,5 @@ function doPost(e) {
 
 // Visiting the web-app URL in a browser shows that the deployment is live.
 function doGet() {
-  return ContentService.createTextOutput('Signal Integration Lab data endpoint is running.');
+  return ContentService.createTextOutput('Signal integration data endpoint is running.');
 }
