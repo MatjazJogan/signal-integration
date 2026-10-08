@@ -19,9 +19,9 @@ Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 
 
 | Run | Conditions (test / reference) | Role |
 | --- | --- | --- |
-| 1 | A / A, A / R, R / R | fit |
-| 2 | B / B, B / R, R / R | fit |
-| 3 | A+B / A+B, A+B / R | predicted |
+| 1 | A / R, R / R | fit |
+| 2 | B / R, R / R | fit |
+| 3 | A+B / R | predicted |
 
 A and B are single-channel gratings, by default 1 and 2 c/° at 9% and 13% contrast, the values of our original calibration; R is a broadband reference (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast. The page measures the display refresh rate and caps reference speeds so that no grating aliases in time. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
 
@@ -35,7 +35,7 @@ Speed is represented as s = log(1 + v/0.3). Each channel contributes a Gaussian 
 | Most reliable channel | s + aσ<sub>min</sub>² | σ<sub>min</sub>² |
 | Channel averaging | s + (a/k) Σ σ<sub>X</sub>² | Σ σ<sub>X</sub>² / k² |
 
-The models coincide for single channels, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once, by maximum likelihood, to runs 1 and 2. Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between chance and the empirical response proportions.
+The models coincide for single channels, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once, by maximum likelihood, to runs 1 and 2. The reference-against-reference condition fixes σ<sub>R</sub>, as our balanced ABCD condition did; each test-against-reference function then yields σ<sub>X</sub> from its slope, √(σ<sub>X</sub>² + σ<sub>R</sub>²), and a from its PSE, a(σ<sub>X</sub>² − σ<sub>R</sub>²). Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between chance and the empirical response proportions.
 
 The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²). A sharp reference therefore matters, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2. In simulations with the standard session (280 trials) and σ<sub>R</sub> ≈ 0.18, optimal integration is separated from the most reliable channel in 70–90% of sessions. The *Simulated observer* tab runs the full procedure on a model observer, including a 50-session recovery test.
 

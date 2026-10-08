@@ -167,9 +167,9 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
       <div class="ctl">
         <span class="lbl">Session length</span>
         <select id="e-len">
-          <option value="12">Short: 168 trials (about 8 min)</option>
-          <option value="20" selected>Standard: 280 trials (about 13 min)</option>
-          <option value="32">Long: 448 trials (about 20 min)</option>
+          <option value="20">Short: 160 trials (about 7 min)</option>
+          <option value="35" selected>Standard: 280 trials (about 13 min)</option>
+          <option value="55">Long: 440 trials (about 20 min)</option>
         </select>
       </div>
       <div class="ctl">
@@ -268,7 +268,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
     </div>
     <div class="ctl">
       <span class="lbl">Trials per staircase</span>
-      <select id="s-n"><option value="12">12 (168 trials)</option><option value="20" selected>20 (280 trials)</option><option value="32">32 (448 trials)</option><option value="100">100 (1400 trials)</option></select>
+      <select id="s-n"><option value="20">20 (160 trials)</option><option value="35" selected>35 (280 trials)</option><option value="55">55 (440 trials)</option><option value="150">150 (1200 trials)</option></select>
     </div>
     <div class="ctl">
       <div class="btns">
@@ -295,7 +295,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
   <div id="r-body" hidden style="display:grid;gap:16px">
     <div class="grid3">
       <figure><figcaption>Goodness of prediction for A + B</figcaption><canvas class="chart" id="c-gop" aria-label="Goodness of prediction per model"></canvas></figure>
-      <figure><figcaption>Discrimination threshold σ (log units)</figcaption><canvas class="chart" id="c-thr" aria-label="Thresholds"></canvas></figure>
+      <figure><figcaption>Sensory noise σ (log units)</figcaption><canvas class="chart" id="c-thr" aria-label="Thresholds"></canvas></figure>
       <figure><figcaption>Matching speed against the reference (°/s)</figcaption><canvas class="chart" id="c-match" aria-label="Matching speeds"></canvas></figure>
     </div>
     <div class="legend">
@@ -319,9 +319,9 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
     <div class="eq">Optimal integration   E[ŝ] = s + a·σ²         Var[ŝ] = σ²,   1/σ² = 1/σ_A² + 1/σ_B²
 Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
 Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
-    <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against itself and against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against itself and against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
+    <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
     <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement.</p>
-    <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition and fitted jointly with the other parameters. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
+    <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition, as our balanced ABCD condition fixed it in the original study. Each test is compared only with the reference: the slope of a test-against-reference function reflects √(σ<sub>X</sub>² + σ<sub>R</sub>²) and its PSE a(σ<sub>X</sub>² − σ<sub>R</sub>²), so once σ<sub>R</sub> is known both σ<sub>X</sub> and a follow, and balanced single-channel conditions add little. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
     <p>The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
     <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ<sub>R</sub> ≈ 0.15–0.2), the true rule predicts best in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in 70–90%. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
     <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
@@ -371,13 +371,11 @@ const MODELS = [
 // test/reference stimulus pairs; run 0 = channel A, run 1 = channel B, run 2 = compound (predicted)
 // R is the common reference: the compound grating at higher contrast, described by its own likelihood width
 // (as the ABCD reference with sigma_Ref in the paper)
+// every test is compared with the reference; R/R fixes sigma_R, as ABCD/ABCD did in the paper
 const CONDS = [
-  { id: 'A/A', test: 'A', ref: 'A', run: 0 },
   { id: 'A/R', test: 'A', ref: 'R', run: 0 },
-  { id: 'B/B', test: 'B', ref: 'B', run: 1 },
   { id: 'B/R', test: 'B', ref: 'R', run: 1 },
   { id: 'R/R', test: 'R', ref: 'R', run: 0, shared: true },   // one staircase in run 1, the other in run 2
-  { id: 'AB/AB', test: 'AB', ref: 'AB', run: 2 },
   { id: 'AB/R', test: 'AB', ref: 'R', run: 2 }
 ];
 const label = x => x === 'AB' ? 'A+B' : x === 'R' ? 'ref' : x;
@@ -779,12 +777,12 @@ function showResults(title, trials, res, truth) {
   if (weak.length) v += ` <br><b>Check the stimulus:</b> responses to channel ${weak.map(w => w[0]).join(' and ')} were close to chance (σ̂ = ${weak.map(w => w[1].toFixed(2)).join(', ')}), so the channel was probably too faint to judge. With one channel this unreliable, optimal integration and the most reliable channel make almost the same prediction. Raise its contrast or use a lower spatial frequency.`;
   $('#r-verdict').innerHTML = v;
   renderResults();
-  $('#r-table').innerHTML = `<tr><th>Condition</th><th>Trials</th><th>Data: PSE (°/s) / threshold <span class="nt">σ</span></th>${MODELS.map(m => `<th><span class="sw" style="background:var(${m.cls})"></span>${m.name}</th>`).join('')}</tr>` +
+  $('#r-table').innerHTML = `<tr><th>Condition</th><th>Trials</th><th>Data: PSE (°/s) · noise <span class="nt">σ</span></th>${MODELS.map(m => `<th><span class="sw" style="background:var(${m.cls})"></span>${m.name}</th>`).join('')}</tr>` +
     CONDS.map((c, i) => {
       const cg = res.cg[i]; if (!cg) return '';
-      const bal = c.test === c.ref;
-      const dat = bal ? `σ = ${(cg.sd / Math.SQRT2).toFixed(2)}` : `${toLin(ST + cg.mu).toFixed(2)} °/s`;
-      const mv = MODELS.map(m => { const T = moments(c.test, f, m.key), R = moments(c.ref, f, m.key); return `<td class="n">${bal ? 'σ = ' + Math.sqrt(T.v).toFixed(2) : toLin(ST + T.m - R.m).toFixed(2) + ' °/s'}${c.run < 2 ? ' <span class="status">fit</span>' : ''}</td>`; }).join('');
+      const bal = c.test === c.ref, ds = dataSigma(res, i);
+      const dat = bal ? `σ ${ds.toFixed(2)}` : `${toLin(ST + cg.mu).toFixed(2)} °/s · σ ${ds.toFixed(2)}`;
+      const mv = MODELS.map(m => { const T = moments(c.test, f, m.key), R = moments(c.ref, f, m.key); return `<td class="n">${bal ? 'σ ' + Math.sqrt(T.v).toFixed(2) : toLin(ST + T.m - R.m).toFixed(2) + ' °/s · σ ' + Math.sqrt(T.v).toFixed(2)}${c.run < 2 ? ' <span class="status">fit</span>' : ''}</td>`; }).join('');
       return `<tr><td>${condName(c)}</td><td class="n">${cg.n}</td><td class="n">${dat}</td>${mv}</tr>`;
     }).join('');
 }
@@ -793,8 +791,8 @@ function renderResults() {
   readTokens();
   const { trials, res } = LAST, f = res.fit;
   drawGOP($('#c-gop'), res);
-  drawSummary($('#c-thr'), res, [0, 2, 4, 5], 'thr');
-  drawSummary($('#c-match'), res, [1, 3, 6], 'match');
+  drawSummary($('#c-thr'), res, [0, 1, 2, 3], 'thr');
+  drawSummary($('#c-match'), res, [0, 1, 3], 'match');
   const host = $('#c-psy');
   if (host.children.length !== CONDS.length) { host.innerHTML = CONDS.map((c, i) => `<figure><figcaption>${condName(c)}${c.run === 2 ? ' · predicted' : ' · fit'}</figcaption><canvas class="chart" id="psy-${i}"></canvas></figure>`).join(''); }
   CONDS.forEach((c, i) => drawPsy($('#psy-' + i), trials.filter(t => t.c === i), c, f));
@@ -823,11 +821,19 @@ function drawGOP(cv, res) {
   txt(ctx, 'cum. Gaussian', X(cgv) - 4, T + ph - 4, 'right', 'alphabetic', TK.ink3, 10);
   cv._hit = nearest(pts);
 }
+// test noise implied by the data: R/R gives sigma_R = sd/sqrt2; X/R gives sqrt(sd^2 - sigma_R^2)
+function dataSigma(res, i) {
+  const c = CONDS[i], cg = res.cg[i], rr = res.cg[CONDS.findIndex(x => x.test === 'R')];
+  if (!cg) return null;
+  if (c.test === c.ref) return cg.sd / Math.SQRT2;
+  const sR = rr ? rr.sd / Math.SQRT2 : res.fit.sR;
+  return Math.sqrt(Math.max(0, cg.sd * cg.sd - sR * sR));
+}
 function drawSummary(cv, res, idxs, kind) {
   const g = prep(cv); if (!g) return; const { ctx, w, h } = g, f = res.fit;
   const L = 44, R = 10, T = 12, B = 40, pw = w - L - R, ph = h - T - B;
   const val = (c, model) => { const Tm = moments(c.test, f, model), Rm = moments(c.ref, f, model); return kind === 'thr' ? Math.sqrt(Tm.v) : toLin(ST + Tm.m - Rm.m); };
-  const dat = i => res.cg[i] ? (kind === 'thr' ? res.cg[i].sd / Math.SQRT2 : toLin(ST + res.cg[i].mu)) : null;
+  const dat = i => res.cg[i] ? (kind === 'thr' ? dataSigma(res, i) : toLin(ST + res.cg[i].mu)) : null;
   const all = [];
   idxs.forEach(i => { const d = dat(i); if (d != null) all.push(d); MODELS.forEach(m => all.push(val(CONDS[i], m.key))); });
   let lo = kind === 'thr' ? 0 : Math.min(...all, V_TEST) * 0.85, hi = Math.max(...all, kind === 'thr' ? 0.5 : V_TEST) * 1.12;
@@ -890,7 +896,7 @@ let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimati
 try { const c = JSON.parse(localStorage.getItem('si-cal') || 'null'); if (c) { $('#e-card').value = c.card; $('#e-dist').value = c.dist; } } catch (e) {}
 syncSetup(); syncSim();
 // open with an example: a long simulated session of an optimally integrating observer
-{ const T = { ...simTruth(), nPer: 60 }, tr = simSession(T); showResults(`Example: simulated observer, ${tr.length} trials`, tr, analyze(tr), T); }
+{ const T = { ...simTruth(), nPer: 100 }, tr = simSession(T); showResults(`Example: simulated observer, ${tr.length} trials`, tr, analyze(tr), T); }
 </script>
 </body>
 </html>
