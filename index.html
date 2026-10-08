@@ -168,18 +168,18 @@ footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
         </div>
         <div class="ctl">
           <label for="e-cA"><span>Channel A contrast</span> <output id="eo-cA"></output></label>
-          <input id="e-cA" type="range" min="2" max="60" step="1" value="10">
+          <input id="e-cA" type="range" min="2" max="60" step="1" value="8">
         </div>
         <div class="ctl">
           <label for="e-cB"><span>Channel B contrast</span> <output id="eo-cB"></output></label>
-          <input id="e-cB" type="range" min="2" max="60" step="1" value="20">
+          <input id="e-cB" type="range" min="2" max="60" step="1" value="16">
         </div>
         <div class="ctl">
-          <label for="e-cR"><span>Reference contrast (each component)</span> <output id="eo-cR"></output></label>
-          <input id="e-cR" type="range" min="10" max="50" step="1" value="40">
+          <label for="e-cR"><span>Reference contrast (total, broadband)</span> <output id="eo-cR"></output></label>
+          <input id="e-cR" type="range" min="40" max="100" step="5" value="90">
         </div>
       </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Each grating is band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s within a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive one channel (A or B) or both (A + B) at the contrasts set here; the common reference is the compound at a higher contrast. Ideally the two channels are about equally reliable, as in the original calibration. Contrast is nominal: the display is not gamma-corrected.</p>
+      <p class="prose" style="margin-top:10px;font-size:14px">Each grating is band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s within a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive one channel (A or B) or both (A + B) at the contrasts set here. The common reference is broadband (octave bands from 0.5 to 4 c/°, as the ABCD stimulus of the paper) at high contrast: the more reliable it is, the better the prior exponent is constrained. Ideally the two test channels are about equally reliable, as after the original calibration. Contrast is nominal: the display is not gamma-corrected.</p>
     </details>
     <div class="btns">
       <button class="b" id="e-start">Start session</button>
@@ -222,7 +222,7 @@ footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
     </div>
     <div class="ctl">
       <label for="s-sR"><span>Reference likelihood width σ<sub>R</sub></span> <output id="so-sR"></output></label>
-      <input id="s-sR" type="range" min="0.1" max="0.9" step="0.01" value="0.27">
+      <input id="s-sR" type="range" min="0.1" max="0.9" step="0.01" value="0.18">
     </div>
     <div class="ctl">
       <label for="s-a"><span>Prior exponent a</span> <output id="so-a"></output></label>
@@ -266,7 +266,8 @@ Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div
     <p>In each trial the observer compares the percepts of test and reference; the probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). All three models are identical for single-channel stimuli, so runs 1 and 2 (each channel against itself and against a common reference, and the reference against itself) determine σ<sub>A</sub>, σ<sub>B</sub>, the reference width σ<sub>R</sub> and a once for all of them. These parameters then predict run 3 (A + B against itself and against the reference) with no further fitting. Optimal integration predicts that the compound is discriminated better than either component and, because its likelihood is narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
     <p>Models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses under each prediction, placed on a scale from a coin flip (chance) to the empirical response proportions (data). The test always drifts at 3°/s; reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating rather than “which was faster” keeps response bias out of the measurement, as in the original study.</p>
     <p>As in the paper, the reference of the unbalanced conditions is a compound stimulus described by its own likelihood width σ<sub>R</sub>; here it is the A + B grating at higher contrast, and a balanced reference-against-reference condition, interleaved in runs 1 and 2, constrains σ<sub>R</sub>, which is fitted jointly with the other parameters. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the two channels are equally reliable, which is also when the three integration rules differ most.</p>
-    <p>With the standard session (20 trials per staircase, 280 trials in all) and parameters typical of the original subjects, simulated observers are assigned their true integration rule in roughly 55–70% of sessions (against 33% by chance); longer sessions or pooling across observers improve this.</p>
+    <p>The prior exponent matters most for telling optimal integration from the most reliable channel. The most-reliable prediction for A + B is simply the better channel, measured directly in runs 1–2, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²); errors in a therefore count against optimal integration. A sharp, high-contrast reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1–2.</p>
+    <p>With the standard session (20 trials per staircase, 280 trials in all) and parameters typical of the original subjects, simulated observers with a sharp reference (σ<sub>R</sub> ≈ 0.15–0.2) are assigned their true integration rule in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in about 70–90% of them; with σ<sub>R</sub> ≈ 0.27 the latter drops to about 55–80%. With nearly equal channels, the most reliable channel and averaging predict similar perceived speeds and differ mainly in threshold. Longer sessions or pooling across observers improve it further.</p>
   </div>
 </section>
 
@@ -408,7 +409,7 @@ function fitCG(trials) {   // cumulative Gaussian per condition: PSE mu and slop
   const r = nelderMead(x => { const sd = Math.exp(x[1]); if (sd < 0.02 || sd > 5) return 1e9; return nllOf(trials, t => LAPSE / 2 + (1 - LAPSE) * Phi((t.off - x[0]) / sd)); }, [0, Math.log(0.5)], 0.3);
   return { mu: r.x[0], sd: Math.exp(r.x[1]), nll: r.f };
 }
-function analyze(trials) {
+function analyze(trials, opts = {}) {
   const fitT = trials.filter(t => CONDS[t.c].run < 2), predT = trials.filter(t => CONDS[t.c].run === 2);
   if (fitT.length < 20) return null;
   const th = x => ({ sA: Math.exp(x[0]), sB: Math.exp(x[1]), sR: Math.exp(x[2]), a: x[3] });
@@ -426,6 +427,19 @@ function analyze(trials) {
     res.data = Object.values(groups).reduce((s, [n, k]) => s - (k ? k * Math.log(k / n) : 0) - (n - k ? (n - k) * Math.log((n - k) / n) : 0), 0);
     res.cgPred = CONDS.reduce((s, c, i) => s + (c.run === 2 && res.cg[i] ? res.cg[i].nll : 0), 0);
     res.best = MODELS.reduce((b, m) => res.pred[m.key] < res.pred[b] ? m.key : b, 'opt');
+    // parameter uncertainty: refit runs 1–2 to bootstrap resamples and repeat the prediction
+    if (opts.boot) {
+      const B = 30, wins = { opt: 0, max: 0, avg: 0 }, as = [];
+      for (let b = 0; b < B; b++) {
+        const samp = fitT.map(() => fitT[Math.floor(Math.random() * fitT.length)]);
+        const objB = x => { const p = th(x); if ([p.sA, p.sB, p.sR].some(v => v < 0.03 || v > 3) || Math.abs(p.a) > 20) return 1e9; return nllOf(samp, t => pRef(CONDS[t.c], t.off, p, 'opt')); };
+        const fb = th(nelderMead(objB, best.x, 0.15, 500).x); as.push(fb.a);
+        const nl = MODELS.map(m => [m.key, nllOf(predT, t => pRef(CONDS[t.c], t.off, fb, m.key))]).sort((x, y) => x[1] - y[1]);
+        wins[nl[0][0]]++;
+      }
+      as.sort((x, y) => x - y);
+      res.boot = { B, wins, aLo: as[Math.floor(0.16 * B)], aHi: as[Math.floor(0.84 * B)] };
+    }
   }
   return res;
 }
@@ -459,9 +473,13 @@ function profile(sf, len, ppd, rng) {
 }
 function makeStim(kind, v, set, rng) {
   const len = Stage.D + Math.ceil(2 * 12 * 0.6 * Stage.ppd) + 4, comps = [];
-  const cA = kind === 'R' ? set.cR : set.cA, cB = kind === 'R' ? set.cR : set.cB;
-  if (kind !== 'B') comps.push({ c: cA / 100, p: profile(set.sfA, len, Stage.ppd, rng) });
-  if (kind !== 'A') comps.push({ c: cB / 100, p: profile(set.sfB, len, Stage.ppd, rng) });
+  if (kind === 'R') {   // broadband reference, as ABCD in the paper: octave bands sharing the total contrast
+    const bands = [...new Set([0.5, 1, 2, 4, set.sfA, set.sfB])].sort((x, y) => x - y);
+    for (const sf of bands) comps.push({ c: set.cR / 100 / bands.length, p: profile(sf, len, Stage.ppd, rng) });
+    return { v, comps, len };
+  }
+  if (kind !== 'B') comps.push({ c: set.cA / 100, p: profile(set.sfA, len, Stage.ppd, rng) });
+  if (kind !== 'A') comps.push({ c: set.cB / 100, p: profile(set.sfB, len, Stage.ppd, rng) });
   return { v, comps, len };
 }
 function drawPatch(ctx, st, cx, cy, tms, dir, amp) {
@@ -572,7 +590,7 @@ function finishSession() {
   E.phase = 'done'; setRunsChip(); lockSetup(false); setButtons(false); drawFrame({ fix: true });
   E.session.finished = new Date().toISOString();
   $('#e-prompt').textContent = 'Session complete. Thank you.'; $('#e-status').textContent = `${E.trials.length} trials recorded`;
-  const res = analyze(E.trials);
+  const res = analyze(E.trials, { boot: true });
   const payload = buildPayload(res);
   E.payload = payload; $('#e-download').disabled = false;
   try { const all = JSON.parse(localStorage.getItem('si-sessions') || '[]'); all.push(payload); localStorage.setItem('si-sessions', JSON.stringify(all.slice(-20))); } catch (e) {}
@@ -586,7 +604,7 @@ function buildPayload(res) {
     screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1 }, px_per_deg: +Stage.ppd.toFixed(2),
     settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, step: STEP },
     conditions: CONDS.map(c => c.id),
-    fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, sigma_R: res.fit.sR, prior_a: res.fit.a, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best } : null,
+    fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, sigma_R: res.fit.sR, prior_a: res.fit.a, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best, boot_wins: res.boot ? res.boot.wins : null, prior_a_68: res.boot ? [res.boot.aLo, res.boot.aHi] : null } : null,
     trials: E.trials.map(t => [t.c, t.off, t.rf, t.ind, t.ts, t.dir, t.rt]),
     trial_fields: ['cond', 'ref_minus_test_logspeed', 'ref_seen_faster', 'marked_side', 'test_side', 'drift_dir', 'rt_ms']
   };
@@ -608,7 +626,7 @@ $('#e-load').addEventListener('change', ev => {
   const f = ev.target.files[0]; if (!f) return;
   f.text().then(txt => {
     const p = JSON.parse(txt), trials = p.trials.map(r => ({ c: r[0], off: r[1], rf: r[2] }));
-    showResults(`Session ${p.participant || ''} ${(p.session_id || '').slice(0, 8)}`, trials, analyze(trials), null);
+    showResults(`Session ${p.participant || ''} ${(p.session_id || '').slice(0, 8)}`, trials, analyze(trials, { boot: true }), null);
     $('#results').scrollIntoView({ behavior: 'smooth' });
   }).catch(() => { $('#e-save').textContent = 'That file could not be read as a session.'; });
   ev.target.value = '';
@@ -642,7 +660,7 @@ function simSession(T) {
   return trials;
 }
 function syncSim() { const T = simTruth(); $('#so-sA').textContent = T.sA.toFixed(2); $('#so-sB').textContent = T.sB.toFixed(2); $('#so-sR').textContent = T.sR.toFixed(2); $('#so-a').textContent = T.a.toFixed(1); }
-$('#s-run').addEventListener('click', () => { const T = simTruth(), tr = simSession(T); showResults('Simulated session', tr, analyze(tr), T); $('#s-status').textContent = `${tr.length} simulated trials`; });
+$('#s-run').addEventListener('click', () => { const T = simTruth(), tr = simSession(T); showResults('Simulated session', tr, analyze(tr, { boot: true }), T); $('#s-status').textContent = `${tr.length} simulated trials`; });
 $('#s-rep').addEventListener('click', () => {
   const T = simTruth(), wins = { opt: 0, max: 0, avg: 0 }, est = [];
   let i = 0; $('#s-rep').disabled = true;
@@ -691,6 +709,11 @@ function showResults(title, trials, res, truth) {
   if (res.nPred) {
     const best = MODELS.find(m => m.key === res.best);
     v += ` Predicting the ${res.nPred} compound-grating trials without further fitting, <b>${best.name.toLowerCase()}</b> fits best (−log L ${res.pred[res.best].toFixed(1)}; chance ${res.chance.toFixed(1)}, data ${res.data.toFixed(1)}).`;
+    if (res.boot) {
+      const bt = res.boot, pc = k => Math.round(100 * bt.wins[k] / bt.B);
+      v += ` Refitting runs 1–2 to ${bt.B} bootstrap resamples, the same model wins in <b>${pc(res.best)}%</b> of cases (optimal ${pc('opt')}%, most reliable ${pc('max')}%, averaging ${pc('avg')}%); the prior exponent lies in [${bt.aLo.toFixed(2)}, ${bt.aHi.toFixed(2)}] (68%).`;
+      if (bt.aHi - bt.aLo > 1.5) v += ' The prior exponent is poorly constrained, which mostly blurs the difference between optimal integration and the most reliable channel; a longer session or a more reliable reference helps.';
+    }
     if (truth) v += ` The simulated observer used ${MODELS.find(m => m.key === truth.rule).name.toLowerCase()}.`;
   } else v += ' Run 3 has no data yet, so no predictions can be compared.';
   $('#r-verdict').innerHTML = v;

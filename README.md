@@ -21,7 +21,7 @@ Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 
 | 2 | B / B, B / R, R / R | fit |
 | 3 | A+B / A+B, A+B / R | predicted |
 
-A and B are the two channels (default 1 and 4 c/°); R, the common reference, is the A+B compound at higher contrast. The page includes a screen calibration (bank-card match and viewing distance) to express stimuli in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
+A and B are the two channels (default 1 and 4 c/°); R, the common reference, is a broadband compound of octave bands from 0.5 to 4 c/° at high contrast, as the ABCD stimulus of the paper. The page includes a screen calibration (bank-card match and viewing distance) to express stimuli in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
 
 ## Model
 
@@ -35,7 +35,11 @@ Speed is represented as s = log(1 + v/0.3). Each channel contributes a Gaussian 
 
 All three are identical for single-channel stimuli, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once (maximum likelihood, 2AFC signal-detection model of Eq. 16) to runs 1 and 2. Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, placed between chance (a coin flip) and the data (empirical response proportions).
 
-The *Simulated observer* tab runs the same procedure on a model observer with chosen parameters and integration rule, including a 50-session recovery test. With the standard session (280 trials) and parameters typical of the original observers, the true rule predicts best in about 55–70% of sessions.
+The prior exponent a is the weak link. The most-reliable-channel prediction for A+B is simply the better channel, measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so errors in a count against optimal integration. A sharp reference constrains a best, which is why R is broadband and high in contrast; the analysis also refits runs 1–2 to bootstrap resamples and reports how often the verdict survives.
+
+The *Simulated observer* tab runs the same procedure on a model observer with chosen parameters and integration rule, including a 50-session recovery test. With the standard session (280 trials) and σ<sub>R</sub> ≈ 0.18, optimal integration is separated from the most reliable channel in about 70–90% of sessions (about 55–80% with σ<sub>R</sub> ≈ 0.27).
+
+Note on the paper: the label in Fig. 3b gives the SD of the balanced psychometric function as σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub> (two equally noisy percepts), as the Methods text (σ = 0.6/√2) and Fig. 3c imply. The code uses √2·σ<sub>Test</sub>.
 
 ## Collecting data
 
