@@ -9,6 +9,8 @@ Interactive companion to
 
 A moving object excites many spatiotemporal frequency channels at once, yet we perceive a single speed. In this study we asked how the visual system combines these signals. We measured speed discrimination for stimuli that each targeted a single channel, fitted a Bayesian observer with a prior for slow speeds, and predicted perception of stimuli that drive several channels at once. Only an observer that integrates the channel likelihoods optimally, before applying the prior, accounted for the data; observers that rely on the most reliable channel or average per-channel estimates did not.
 
+<p align="center"><img src="img/integration-models.svg" alt="Three ways to combine two speed channels: optimal integration, most reliable channel and channel averaging" width="100%"></p>
+
 `index.html` lets anyone repeat a two-channel version of the experiment in the browser and see the same analysis applied to their own responses. It is a single self-contained page.
 
 ## Experiment
@@ -39,12 +41,4 @@ The prior exponent is critical for separating optimal integration from the most 
 
 A correction to the paper: in Fig. 3b the SD of the balanced psychometric function should read √2·σ<sub>Test</sub>, not σ<sub>Test</sub>/√2, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis uses √2·σ<sub>Test</sub>.
 
-## Data collection
-
-Each finished session is posted to a Google Sheet through a Google Apps Script web app ([`apps-script/Code.gs`](apps-script/Code.gs)), and can also be downloaded as JSON and re-analysed on the page. Each row holds the session identifiers, fitted parameters and per-model log-likelihoods, followed by the settings and the full trial list as JSON. Trials are stored as `[cond, ref_minus_test_logspeed, ref_seen_faster, marked_side, test_side, drift_dir, rt_ms]`, with conditions indexed as in `conditions`.
-
-To collect into a different sheet: create the sheet, paste `Code.gs` into **Extensions → Apps Script**, deploy it as a web app (*Execute as* **Me**, *Who has access* **Anyone**), and set `SHEET_ENDPOINT` in `index.html` to the deployment URL. When changing the script, deploy a new version of the existing deployment so that the URL stays the same.
-
-## Hosting
-
-The page is served by GitHub Pages from the root of the `main` branch.
+Notes for running the study and collecting data are in [SETUP.md](SETUP.md).

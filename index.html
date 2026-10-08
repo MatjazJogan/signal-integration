@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Signal Integration Lab</title>
+<title>Speed Signal Integration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -61,9 +61,9 @@ section.tab { display: grid; gap: 18px; }
 input[type=range] { width: 100%; accent-color: var(--ink); }
 input[type=text], input[type=number], select { font: 14px var(--font-ui); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); width: 100%; }
 .btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-button.b { font: 700 14px var(--font-ui); padding: 8px 16px; border-radius: 7px; border: 1px solid var(--ink); background: var(--ink); color: var(--panel); cursor: pointer; }
-button.b.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
-button.b:disabled { opacity: .45; cursor: default; }
+.b { font: 700 14px var(--font-ui); padding: 8px 16px; border-radius: 7px; border: 1px solid var(--ink); background: var(--ink); color: var(--panel); cursor: pointer; }
+.b.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.b:disabled { opacity: .45; cursor: default; }
 button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--opt); outline-offset: 2px; }
 .status { font: 13px var(--font-data); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .prose { max-width: 75ch; color: var(--ink-2); display: grid; gap: 10px; }
@@ -107,22 +107,51 @@ details summary { cursor: pointer; font-weight: 700; color: var(--ink-2); font-s
 #tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--panel); font: 12px/1.45 var(--font-data); padding: 6px 9px; border-radius: 6px; max-width: 280px; opacity: 0; transition: opacity .08s; }
 @media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
 footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
+footer a, .note a, .prose a { color: var(--ink-2); }
+.byline { color: var(--ink-2); font-size: 15px; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+a.b { text-decoration: none; display: inline-block; }
+.fig { display: grid; gap: 10px; }
+.fig img { width: 100%; height: auto; border-radius: 6px; background: #fff; }
+.fig figcaption { font-weight: 400; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
+.section-h { font-size: 24px; margin: 18px 0 0; }
+pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 0; }
 </style>
 </head>
 <body>
 
 <header class="top wrap">
-  <p class="eyebrow">Jogan &amp; Stocker · J Neurosci 35(25):9381–9390, 2015</p>
-  <h1>Signal Integration Lab</h1>
-  <p class="lede">A moving object excites many spatiotemporal frequency channels at once, yet we perceive a single speed. In our 2015 study we asked how the visual system combines these signals. Here you can repeat a two-channel version of that experiment: we measure speed discrimination for gratings that each drive a single spatial-frequency channel, fit a Bayesian observer with a prior for slow speeds to these data, and predict, with no free parameters, how the compound grating is perceived if the channels are combined optimally, if only the most reliable channel is used, or if per-channel estimates are averaged. In our original data only optimal integration accounted for the compound stimuli.</p>
-  <nav class="tabs" role="tablist">
-    <button id="tabbtn-exp" role="tab" aria-selected="true" aria-controls="tab-exp">Run the experiment</button>
-    <button id="tabbtn-sim" role="tab" aria-selected="false" aria-controls="tab-sim">Simulated observer</button>
-    <button id="tabbtn-model" role="tab" aria-selected="false" aria-controls="tab-model">Model</button>
-  </nav>
+  <p class="eyebrow">Journal of Neuroscience · 35(25):9381–9390 · 2015</p>
+  <h1>Signal integration in human visual speed perception</h1>
+  <p class="byline">Matjaž Jogan and Alan A. Stocker · University of Pennsylvania</p>
+  <p class="lede">A moving object excites many spatiotemporal frequency channels at once, yet we perceive a single speed. We asked how the visual system combines these signals. Measuring speed discrimination for stimuli that each targeted one channel, we fitted a Bayesian observer with a prior for slow speeds and used it to predict perception of stimuli that drive several channels together. Only an observer that integrates the channels optimally, and applies the prior after integration, accounted for the data.</p>
+  <div class="links">
+    <a class="b" href="https://doi.org/10.1523/JNEUROSCI.4801-14.2015">Read the paper</a>
+    <a class="b ghost" href="#demo">Try the experiment</a>
+    <a class="b ghost" href="#cite">Cite</a>
+  </div>
 </header>
 
 <main class="wrap">
+
+<figure class="card fig">
+  <img src="img/integration-models.svg" alt="Three panels comparing how two channel likelihoods are combined: optimal integration multiplies them before applying the slow-speed prior and yields the narrowest, fastest percept; the most reliable channel uses only the sharper channel; averaging applies the prior to each channel and averages the estimates, giving the slowest percept." width="1000" height="400">
+  <figcaption>Three ways an observer could combine two speed channels. Each predicts a different precision and perceived speed for a stimulus that drives both channels; single-channel stimuli are treated identically by all three, which is what allows the comparison to be made without free parameters.</figcaption>
+</figure>
+
+<section class="card prose" id="findings">
+  <h2>What we found</h2>
+  <p>Four observers judged the speed of gratings drifting at 3°/s whose energy was confined to one of four spatiotemporal frequency channels (0.5, 1, 2 and 4 c/°), or spread over two, three or all four of them: 13 conditions and 2600 trials per observer. Two regularities stood out. Discrimination thresholds fell as more channels were driven, and stimuli driving more channels appeared faster; the inverse relation between uncertainty and perceived speed is the signature of a Bayesian observer with a prior for slow speeds.</p>
+  <p>We fitted each observer’s single-channel data and predicted the multi-channel conditions, about 40% of all trials, without adjusting any parameter. Optimal integration predicted both thresholds and matching speeds best in every observer, and for the average observer its predictions came close to the likelihood of descriptive fits to each condition. Relying on the most reliable channel underestimated the gain in precision and the increase in perceived speed; averaging channel estimates matched the gain in precision but predicted compound stimuli that appear too slow.</p>
+  <p>The comparison also places the prior: it enters only after the channel signals have been combined. Because speed-tuned neurons are first common in area MT, this suggests that prior expectations act downstream of the stage at which spatiotemporal channels are integrated.</p>
+</section>
+
+<h2 class="section-h" id="demo">Try it yourself</h2>
+<p class="note">The experiment below is a two-channel version of the study. Your responses to single-channel gratings are used to fit the observer, which then predicts, under each integration rule, how you perceive the compound grating. The simulated observer shows how reliably a single session separates the rules.</p>
+<nav class="tabs" role="tablist">
+  <button id="tabbtn-exp" role="tab" aria-selected="true" aria-controls="tab-exp">Run the experiment</button>
+  <button id="tabbtn-sim" role="tab" aria-selected="false" aria-controls="tab-sim">Simulated observer</button>
+</nav>
 
 <!-- ======================= EXPERIMENT ======================= -->
 <section class="tab" id="tab-exp" role="tabpanel" aria-labelledby="tabbtn-exp">
@@ -256,20 +285,6 @@ footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
 </section>
 
 <!-- ======================= MODEL ======================= -->
-<section class="tab" id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model" hidden>
-  <div class="card prose">
-    <h2>Observer model</h2>
-    <p>We represent speed in the normalised logarithmic space s = log(1 + v/s<sub>0</sub>), with s<sub>0</sub> = 0.3°/s. Each channel X provides a measurement with a Gaussian likelihood of width σ<sub>X</sub>, and the prior is locally a power law, log p(s) = as + b. The three observers differ only in how they combine the channels.</p>
-    <div class="eq">Optimal integration   E[ŝ] = s + a·σ²         Var[ŝ] = σ²,   1/σ² = 1/σ_A² + 1/σ_B²
-Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
-Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
-    <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against itself and against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against itself and against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
-    <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement.</p>
-    <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition and fitted jointly with the other parameters. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
-    <p>The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
-    <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ<sub>R</sub> ≈ 0.15–0.2), the true rule predicts best in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in 70–90%. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
-  </div>
-</section>
 
 <!-- ======================= RESULTS (shared) ======================= -->
 <section class="card" id="results" style="display:grid;gap:16px">
@@ -297,10 +312,41 @@ Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div
     <div class="tablewrap"><table id="r-table"></table></div>
   </div>
 </section>
+
+<section class="card prose" id="method">
+    <h2>How the demo works</h2>
+    <p>We represent speed in the normalised logarithmic space s = log(1 + v/s<sub>0</sub>), with s<sub>0</sub> = 0.3°/s. Each channel X provides a measurement with a Gaussian likelihood of width σ<sub>X</sub>, and the prior is locally a power law, log p(s) = as + b. The three observers differ only in how they combine the channels.</p>
+    <div class="eq">Optimal integration   E[ŝ] = s + a·σ²         Var[ŝ] = σ²,   1/σ² = 1/σ_A² + 1/σ_B²
+Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
+Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
+    <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against itself and against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against itself and against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
+    <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement.</p>
+    <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition and fitted jointly with the other parameters. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
+    <p>The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
+    <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ<sub>R</sub> ≈ 0.15–0.2), the true rule predicts best in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in 70–90%. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
+    <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
+</section>
+
+<section class="card" id="cite" style="display:grid;gap:10px">
+  <h2>Cite</h2>
+  <p class="note">Jogan M, Stocker AA (2015) Signal integration in human visual speed perception. <i>J Neurosci</i> 35(25):9381–9390. <a href="https://doi.org/10.1523/JNEUROSCI.4801-14.2015">doi:10.1523/JNEUROSCI.4801-14.2015</a></p>
+  <pre class="bib" id="bibtex">@article{Jogan2015,
+  author  = {Jogan, Matja{\v{z}} and Stocker, Alan A.},
+  title   = {Signal Integration in Human Visual Speed Perception},
+  journal = {Journal of Neuroscience},
+  volume  = {35},
+  number  = {25},
+  pages   = {9381--9390},
+  year    = {2015},
+  doi     = {10.1523/JNEUROSCI.4801-14.2015}
+}</pre>
+  <div class="btns"><button class="b ghost" id="copy-bib">Copy BibTeX</button><span class="status" id="copy-status"></span></div>
+</section>
+
 </main>
 
 <footer class="wrap">
-  <p>M. Jogan and A. A. Stocker (2015). Signal integration in human visual speed perception. <i>Journal of Neuroscience</i> 35(25):9381–9390. doi:10.1523/JNEUROSCI.4801-14.2015. Finished sessions are saved with the participant code you enter, your browser and screen settings, and your responses; please do not use your name.</p>
+  <p>Matjaž Jogan · Computational Perception and Cognition Laboratory, University of Pennsylvania. Finished sessions are saved with the participant code you enter, your browser and screen settings, and your responses; please do not use your name. <a href="https://github.com/MatjazJogan/signal-integration">Source on GitHub</a>.</p>
 </footer>
 
 <div id="tip" role="status" aria-live="polite"></div>
@@ -813,10 +859,15 @@ document.addEventListener('pointermove', e => {
 });
 function showTab(name) {
   if (name !== 'exp' && E.phase !== 'idle' && E.phase !== 'done') abortSession();
-  for (const t of ['exp', 'sim', 'model']) { $('#tab-' + t).hidden = t !== name; $('#tabbtn-' + t).setAttribute('aria-selected', String(t === name)); }
+  for (const t of ['exp', 'sim']) { $('#tab-' + t).hidden = t !== name; $('#tabbtn-' + t).setAttribute('aria-selected', String(t === name)); }
   renderResults();
 }
-for (const t of ['exp', 'sim', 'model']) $('#tabbtn-' + t).addEventListener('click', () => showTab(t));
+for (const t of ['exp', 'sim']) $('#tabbtn-' + t).addEventListener('click', () => showTab(t));
+$('#copy-bib').addEventListener('click', () => {
+  const t = $('#bibtex').textContent;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { $('#copy-status').textContent = 'Copied'; })
+    .catch(() => { const r = document.createRange(); r.selectNodeContents($('#bibtex')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('#copy-status').textContent = 'Selected; press Ctrl+C to copy'; });
+});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderResults);
 new MutationObserver(renderResults).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(renderResults); }).observe(document.body);
