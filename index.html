@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Signal Integration Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: setup and stimulus stage on top, shared analysis underneath (fits, predictions, model comparison). */
+:root {
+  --bg: #f3f5f8;
+  --panel: #ffffff;
+  --ink: #0f1722;
+  --ink-2: #485462;
+  --ink-3: #78838f;
+  --rule: #dce2e9;
+  --opt: #2a78d6;      /* optimal integration  (categorical slot 1) */
+  --max: #eb6834;      /* most reliable channel (slot 2) */
+  --avg: #1baf7a;      /* channel averaging     (slot 3) */
+  --data: #0f1722;
+  --font-ui: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895;
+    --rule: #28313b; --opt: #3987e5; --max: #d95926; --avg: #199e70; --data: #edf1f5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895;
+  --rule: #28313b; --opt: #3987e5; --max: #d95926; --avg: #199e70; --data: #edf1f5;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-ui); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+header.top { padding-block: 36px 8px; display: grid; gap: 14px; }
+.eyebrow { font: 600 12px/1.4 var(--font-data); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 6px; }
+h3 { font-size: 16px; margin: 0 0 6px; }
+p { margin: 0; }
+.lede { max-width: 72ch; color: var(--ink-2); font-size: 16px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+.tabs button { font: 700 14px var(--font-ui); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--ink-3); padding: 10px 14px; cursor: pointer; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+main { padding-block: 20px 60px; display: grid; gap: 18px; }
+section.tab { display: grid; gap: 18px; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; min-width: 0; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 22px; align-items: end; }
+.ctl { display: grid; gap: 4px; min-width: 0; }
+.ctl label, .ctl .lbl { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.ctl output, .num { font: 600 13px var(--font-data); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctl small { color: var(--ink-3); font-size: 12px; line-height: 1.35; }
+input[type=range] { width: 100%; accent-color: var(--ink); }
+input[type=text], input[type=number], select { font: 14px var(--font-ui); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); width: 100%; }
+.btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button.b { font: 700 14px var(--font-ui); padding: 8px 16px; border-radius: 7px; border: 1px solid var(--ink); background: var(--ink); color: var(--panel); cursor: pointer; }
+button.b.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+button.b:disabled { opacity: .45; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--opt); outline-offset: 2px; }
+.status { font: 13px var(--font-data); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.prose { max-width: 75ch; color: var(--ink-2); display: grid; gap: 10px; }
+.prose code { font: 13px var(--font-data); color: var(--ink); }
+.note { max-width: 75ch; color: var(--ink-2); }
+.note b { color: var(--ink); }
+th .nt { text-transform: none; }
+.eq { font: 13px/1.7 var(--font-data); color: var(--ink); background: var(--bg); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.card-cal { display: grid; gap: 10px; }
+.cardbox { height: 54px; border: 2px solid var(--ink); border-radius: 6px; background: repeating-linear-gradient(45deg, transparent 0 6px, var(--rule) 6px 7px); max-width: 100%; }
+.stagewrap { overflow-x: auto; background: rgb(128,128,128); border-radius: 8px; display: flex; justify-content: center; }
+#stage { display: block; image-rendering: pixelated; }
+.prompt { text-align: center; font-size: 17px; font-weight: 700; min-height: 1.6em; }
+.resp { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.resp button { min-width: 170px; font-size: 16px; padding: 12px 18px; }
+kbd { font: 12px var(--font-data); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--ink); background: var(--bg); }
+.runs { display: flex; gap: 8px; flex-wrap: wrap; }
+.runs span { font: 12px var(--font-data); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; color: var(--ink-3); }
+.runs span.on { border-color: var(--ink); color: var(--ink); }
+.runs span.done { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+canvas.chart { display: block; width: 100%; }
+figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
+figcaption { font-size: 13px; color: var(--ink-2); font-weight: 700; }
+.psy7 { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.psy7 canvas { aspect-ratio: 4 / 3; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 900px) { .grid3 { grid-template-columns: 1fr; } }
+.grid3 canvas { aspect-ratio: 4 / 3; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); align-items: center; }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+td.n { font: 14px var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.verdict { font-size: 15px; color: var(--ink-2); max-width: 80ch; }
+.verdict b { color: var(--ink); }
+.empty { color: var(--ink-3); font-size: 14px; padding: 18px 0; }
+details summary { cursor: pointer; font-weight: 700; color: var(--ink-2); font-size: 14px; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--panel); font: 12px/1.45 var(--font-data); padding: 6px 9px; border-radius: 6px; max-width: 280px; opacity: 0; transition: opacity .08s; }
+@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <p class="eyebrow">Jogan &amp; Stocker · J Neurosci 35(25):9381–9390, 2015</p>
+  <h1>Signal Integration Lab</h1>
+  <p class="lede">A moving object drives many spatiotemporal frequency channels at once, yet we see a single speed. Following Jogan and Stocker, this experiment measures speed discrimination for gratings that each drive one spatial-frequency channel, fits a Bayesian observer with a prior for slow speeds to those data, and then predicts, without free parameters, how the compound grating is perceived under three rules of integration: optimal combination of the channel likelihoods, reliance on the most reliable channel, and averaging of per-channel estimates.</p>
+  <nav class="tabs" role="tablist">
+    <button id="tabbtn-exp" role="tab" aria-selected="true" aria-controls="tab-exp">Run the experiment</button>
+    <button id="tabbtn-sim" role="tab" aria-selected="false" aria-controls="tab-sim">Simulated observer</button>
+    <button id="tabbtn-model" role="tab" aria-selected="false" aria-controls="tab-model">Model</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<!-- ======================= EXPERIMENT ======================= -->
+<section class="tab" id="tab-exp" role="tabpanel" aria-labelledby="tabbtn-exp">
+  <div class="card" style="display:grid;gap:14px">
+    <h2>Before you start</h2>
+    <p class="note">Sit about 57 cm from the screen in a dim room and keep your eyes on the central dot throughout. Two drifting gratings appear briefly on either side. A white square then marks one of them: report whether <b>the marked grating</b> moved <b>faster</b> or <b>slower</b> than the other. The session has three runs (about 4 minutes each) with breaks in between.</p>
+    <div class="controls">
+      <div class="ctl">
+        <label for="e-part"><span>Participant code</span></label>
+        <input id="e-part" type="text" maxlength="24" placeholder="e.g. P07 (no names)">
+        <small>Saved with your data. Use a code, not your name.</small>
+      </div>
+      <div class="ctl">
+        <span class="lbl">Session length</span>
+        <select id="e-len">
+          <option value="12">Short: 168 trials (about 8 min)</option>
+          <option value="20" selected>Standard: 280 trials (about 13 min)</option>
+          <option value="32">Long: 448 trials (about 20 min)</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="e-dist"><span>Viewing distance</span> <output id="eo-dist"></output></label>
+        <input id="e-dist" type="range" min="35" max="90" step="1" value="57">
+      </div>
+    </div>
+    <div class="card-cal">
+      <div class="ctl">
+        <label for="e-card"><span>Screen calibration: drag until the box matches the long edge of a bank card (85.6 mm)</span> <output id="eo-ppd"></output></label>
+        <input id="e-card" type="range" min="150" max="900" step="1" value="323">
+      </div>
+      <div class="cardbox" id="cardbox"></div>
+    </div>
+    <details>
+      <summary>Stimulus settings</summary>
+      <div class="controls" style="margin-top:12px">
+        <div class="ctl">
+          <span class="lbl">Channel A spatial frequency</span>
+          <select id="e-sfA"><option value="0.5">0.5 c/°</option><option value="1" selected>1 c/°</option><option value="2">2 c/°</option></select>
+        </div>
+        <div class="ctl">
+          <span class="lbl">Channel B spatial frequency</span>
+          <select id="e-sfB"><option value="2">2 c/°</option><option value="4" selected>4 c/°</option></select>
+        </div>
+        <div class="ctl">
+          <label for="e-cA"><span>Channel A contrast</span> <output id="eo-cA"></output></label>
+          <input id="e-cA" type="range" min="2" max="60" step="1" value="10">
+        </div>
+        <div class="ctl">
+          <label for="e-cB"><span>Channel B contrast</span> <output id="eo-cB"></output></label>
+          <input id="e-cB" type="range" min="2" max="60" step="1" value="20">
+        </div>
+        <div class="ctl">
+          <label for="e-cR"><span>Reference contrast (each component)</span> <output id="eo-cR"></output></label>
+          <input id="e-cR" type="range" min="10" max="50" step="1" value="40">
+        </div>
+      </div>
+      <p class="prose" style="margin-top:10px;font-size:14px">Each grating is band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s within a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive one channel (A or B) or both (A + B) at the contrasts set here; the common reference is the compound at a higher contrast. Ideally the two channels are about equally reliable, as in the original calibration. Contrast is nominal: the display is not gamma-corrected.</p>
+    </details>
+    <div class="btns">
+      <button class="b" id="e-start">Start session</button>
+      <button class="b ghost" id="e-stop" disabled>Abort</button>
+      <span class="status" id="e-status">Ready</span>
+    </div>
+    <div class="runs" id="e-runs"><span>Practice</span><span>Run 1 · channel A</span><span>Run 2 · channel B</span><span>Run 3 · A + B</span></div>
+  </div>
+
+  <div class="card" style="display:grid;gap:12px">
+    <div class="stagewrap"><canvas id="stage" aria-label="Stimulus display"></canvas></div>
+    <p class="prompt" id="e-prompt">The stimulus appears here.</p>
+    <div class="resp">
+      <button class="b ghost" id="e-faster" disabled>↑ Marked was faster</button>
+      <button class="b ghost" id="e-slower" disabled>↓ Marked was slower</button>
+    </div>
+  </div>
+
+  <div class="card" style="display:grid;gap:10px">
+    <h3>Your data</h3>
+    <p class="prose" id="e-save">Finished sessions are saved automatically and can also be downloaded.</p>
+    <div class="btns">
+      <button class="b ghost" id="e-download" disabled>Download session (JSON)</button>
+      <label class="b ghost" for="e-load" style="display:inline-block">Analyse a saved session…</label>
+      <input id="e-load" type="file" accept="application/json,.json" hidden>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SIMULATION ======================= -->
+<section class="tab" id="tab-sim" role="tabpanel" aria-labelledby="tabbtn-sim" hidden>
+  <div class="card controls">
+    <div class="ctl">
+      <label for="s-sA"><span>Channel A likelihood width σ<sub>A</sub></span> <output id="so-sA"></output></label>
+      <input id="s-sA" type="range" min="0.15" max="0.9" step="0.01" value="0.5">
+    </div>
+    <div class="ctl">
+      <label for="s-sB"><span>Channel B likelihood width σ<sub>B</sub></span> <output id="so-sB"></output></label>
+      <input id="s-sB" type="range" min="0.15" max="0.9" step="0.01" value="0.44">
+    </div>
+    <div class="ctl">
+      <label for="s-sR"><span>Reference likelihood width σ<sub>R</sub></span> <output id="so-sR"></output></label>
+      <input id="s-sR" type="range" min="0.1" max="0.9" step="0.01" value="0.27">
+    </div>
+    <div class="ctl">
+      <label for="s-a"><span>Prior exponent a</span> <output id="so-a"></output></label>
+      <input id="s-a" type="range" min="-5" max="0" step="0.1" value="-2">
+      <small>Slope of the log prior in log-speed space; negative values favour slow speeds.</small>
+    </div>
+    <div class="ctl">
+      <span class="lbl">True integration rule</span>
+      <select id="s-rule">
+        <option value="opt">Optimal integration</option>
+        <option value="max">Most reliable channel</option>
+        <option value="avg">Channel averaging</option>
+      </select>
+    </div>
+    <div class="ctl">
+      <span class="lbl">Trials per staircase</span>
+      <select id="s-n"><option value="12">12 (168 trials)</option><option value="20" selected>20 (280 trials)</option><option value="32">32 (448 trials)</option><option value="100">100 (1400 trials)</option></select>
+    </div>
+    <div class="ctl">
+      <div class="btns">
+        <button class="b" id="s-run">Simulate a session</button>
+        <button class="b ghost" id="s-rep">Repeat 50 sessions</button>
+      </div>
+      <span class="status" id="s-status"></span>
+    </div>
+  </div>
+  <div class="card" id="s-repcard" hidden>
+    <h3>Which model predicts best, across 50 simulated sessions</h3>
+    <div class="tablewrap"><table id="s-reptable"></table></div>
+  </div>
+</section>
+
+<!-- ======================= MODEL ======================= -->
+<section class="tab" id="tab-model" role="tabpanel" aria-labelledby="tabbtn-model" hidden>
+  <div class="card prose">
+    <h2>Observer model</h2>
+    <p>Speed is represented in the normalised logarithmic space s = log(1 + v/s<sub>0</sub>), s<sub>0</sub> = 0.3°/s. Each channel X responds with a measurement m<sub>X</sub> whose likelihood is Gaussian with width σ<sub>X</sub>, and the prior is locally a power law, log p(s) = as + b. The models differ only in how the channels are combined.</p>
+    <div class="eq">Optimal integration   E[ŝ] = s + a·σ²         Var[ŝ] = σ²,   1/σ² = 1/σ_A² + 1/σ_B²
+Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
+Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
+    <p>In each trial the observer compares the percepts of test and reference; the probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). All three models are identical for single-channel stimuli, so runs 1 and 2 (each channel against itself and against a common reference, and the reference against itself) determine σ<sub>A</sub>, σ<sub>B</sub>, the reference width σ<sub>R</sub> and a once for all of them. These parameters then predict run 3 (A + B against itself and against the reference) with no further fitting. Optimal integration predicts that the compound is discriminated better than either component and, because its likelihood is narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
+    <p>Models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses under each prediction, placed on a scale from a coin flip (chance) to the empirical response proportions (data). The test always drifts at 3°/s; reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating rather than “which was faster” keeps response bias out of the measurement, as in the original study.</p>
+    <p>As in the paper, the reference of the unbalanced conditions is a compound stimulus described by its own likelihood width σ<sub>R</sub>; here it is the A + B grating at higher contrast, and a balanced reference-against-reference condition, interleaved in runs 1 and 2, constrains σ<sub>R</sub>, which is fitted jointly with the other parameters. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the two channels are equally reliable, which is also when the three integration rules differ most.</p>
+    <p>With the standard session (20 trials per staircase, 280 trials in all) and parameters typical of the original subjects, simulated observers are assigned their true integration rule in roughly 55–70% of sessions (against 33% by chance); longer sessions or pooling across observers improve this.</p>
+  </div>
+</section>
+
+<!-- ======================= RESULTS (shared) ======================= -->
+<section class="card" id="results" style="display:grid;gap:16px">
+  <div>
+    <h2 id="r-title">Results</h2>
+    <p class="verdict" id="r-verdict">Run a session or simulate one to see the analysis.</p>
+  </div>
+  <div id="r-body" hidden style="display:grid;gap:16px">
+    <div class="grid3">
+      <figure><figcaption>Goodness of prediction for A + B</figcaption><canvas class="chart" id="c-gop" aria-label="Goodness of prediction per model"></canvas></figure>
+      <figure><figcaption>Discrimination threshold σ (log units)</figcaption><canvas class="chart" id="c-thr" aria-label="Thresholds"></canvas></figure>
+      <figure><figcaption>Matching speed against the reference (°/s)</figcaption><canvas class="chart" id="c-match" aria-label="Matching speeds"></canvas></figure>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--data);height:8px;width:8px;border-radius:50%"></i>Data (cumulative Gaussian per condition)</span>
+      <span><i style="background:var(--ink-3)"></i>Fit (all models, single channels)</span>
+      <span><i style="background:var(--opt)"></i>Optimal integration</span>
+      <span><i style="background:var(--max)"></i>Most reliable channel</span>
+      <span><i style="background:var(--avg)"></i>Channel averaging</span>
+    </div>
+    <div>
+      <h3>Psychometric functions</h3>
+      <div class="psy7" id="c-psy"></div>
+    </div>
+    <div class="tablewrap"><table id="r-table"></table></div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap">
+  <p>M. Jogan and A. A. Stocker, “Signal integration in human visual speed perception”, <i>Journal of Neuroscience</i> 35(25):9381–9390, 2015. doi:10.1523/JNEUROSCI.4801-14.2015.</p>
+</footer>
+
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ======================= configuration =======================
+   Paste the Google Apps Script web-app URL here to collect finished sessions in a Google Sheet
+   (see README, "Collecting data"). Leave empty to disable uploading. */
+const SHEET_ENDPOINT = '';
+
+const $ = s => document.querySelector(s);
+const S0 = 0.3, V_TEST = 3;
+const toLog = v => Math.log(1 + v / S0), toLin = s => S0 * (Math.exp(s) - 1);
+const ST = toLog(V_TEST);
+const LAPSE = 0.01, STEP = 0.1, OFF_LIM = 1.2;
+const MODELS = [
+  { key: 'opt', name: 'Optimal integration', cls: '--opt', shape: 'circle' },
+  { key: 'max', name: 'Most reliable channel', cls: '--max', shape: 'square' },
+  { key: 'avg', name: 'Channel averaging', cls: '--avg', shape: 'diamond' }
+];
+// test/reference stimulus pairs; run 0 = channel A, run 1 = channel B, run 2 = compound (predicted)
+// R is the common reference: the compound grating at higher contrast, described by its own likelihood width
+// (as the ABCD reference with sigma_Ref in the paper)
+const CONDS = [
+  { id: 'A/A', test: 'A', ref: 'A', run: 0 },
+  { id: 'A/R', test: 'A', ref: 'R', run: 0 },
+  { id: 'B/B', test: 'B', ref: 'B', run: 1 },
+  { id: 'B/R', test: 'B', ref: 'R', run: 1 },
+  { id: 'R/R', test: 'R', ref: 'R', run: 0, shared: true },   // one staircase in run 1, the other in run 2
+  { id: 'AB/AB', test: 'AB', ref: 'AB', run: 2 },
+  { id: 'AB/R', test: 'AB', ref: 'R', run: 2 }
+];
+const label = x => x === 'AB' ? 'A+B' : x === 'R' ? 'ref' : x;
+const condName = c => `${label(c.test)} vs ${label(c.ref)}`;
+
+/* ---------------- math ---------------- */
+function erfc(x) {
+  const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +
+    t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+const Phi = x => 0.5 * erfc(-x / Math.SQRT2);
+function randn() { let u = 0; while (!u) u = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * Math.random()); }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function mulberry(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function nelderMead(f, x0, step = 0.3, iters = 500) {
+  const n = x0.length; let P = [x0.slice()];
+  for (let i = 0; i < n; i++) { const p = x0.slice(); p[i] += step; P.push(p); }
+  let F = P.map(f);
+  for (let it = 0; it < iters; it++) {
+    const idx = F.map((v, i) => i).sort((a, b) => F[a] - F[b]); P = idx.map(i => P[i]); F = idx.map(i => F[i]);
+    if (Math.abs(F[n] - F[0]) < 1e-7) break;
+    const c = Array(n).fill(0); for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) c[j] += P[i][j] / n;
+    const pt = (t) => c.map((v, j) => v + t * (P[n][j] - v));
+    const xr = pt(-1), fr = f(xr);
+    if (fr < F[0]) { const xe = pt(-2), fe = f(xe); if (fe < fr) { P[n] = xe; F[n] = fe; } else { P[n] = xr; F[n] = fr; } }
+    else if (fr < F[n - 1]) { P[n] = xr; F[n] = fr; }
+    else {
+      const xc = fr < F[n] ? pt(-0.5) : pt(0.5), fc = f(xc);
+      if (fc < Math.min(fr, F[n])) { P[n] = xc; F[n] = fc; }
+      else for (let i = 1; i <= n; i++) { P[i] = P[i].map((v, j) => P[0][j] + 0.5 * (v - P[0][j])); F[i] = f(P[i]); }
+    }
+  }
+  let b = 0; for (let i = 1; i <= n; i++) if (F[i] < F[b]) b = i;
+  return { x: P[b], f: F[b] };
+}
+
+/* ---------------- observer model (Jogan & Stocker 2015, Eqs. 7–15) ---------------- */
+// percept moments relative to the true log speed: mean shift a·σ², variance σ²
+function moments(stim, th, model) {
+  const vA = th.sA * th.sA, vB = th.sB * th.sB;
+  if (stim === 'A') return { m: th.a * vA, v: vA };
+  if (stim === 'B') return { m: th.a * vB, v: vB };
+  if (stim === 'R') { const vR = th.sR * th.sR; return { m: th.a * vR, v: vR }; }
+  if (model === 'opt') { const v = 1 / (1 / vA + 1 / vB); return { m: th.a * v, v }; }
+  if (model === 'max') { const v = Math.min(vA, vB); return { m: th.a * v, v }; }
+  return { m: th.a * (vA + vB) / 2, v: (vA + vB) / 4 };   // averaging over k = 2 channels
+}
+// P(reference seen faster), off = reference − test in normalised log speed (Eq. 16)
+function pRef(c, off, th, model) {
+  const T = moments(c.test, th, model), R = moments(c.ref, th, model);
+  return LAPSE / 2 + (1 - LAPSE) * Phi((off + R.m - T.m) / Math.sqrt(T.v + R.v));
+}
+const nllOf = (trials, p) => trials.reduce((s, t) => { const q = p(t); return s - Math.log(t.rf ? q : 1 - q); }, 0);
+
+/* ---------------- staircases ---------------- */
+function newStairs(run) {
+  const st = {};
+  CONDS.forEach((c, i) => {
+    if (c.shared) { if (run === 0) st[i + 'u'] = { c: i, rule: '1u2d', off: 0.5, k: 0 }; if (run === 1) st[i + 'd'] = { c: i, rule: '2u1d', off: -0.5, k: 0 }; }
+    else if (c.run === run) { st[i + 'u'] = { c: i, rule: '1u2d', off: 0.5, k: 0 }; st[i + 'd'] = { c: i, rule: '2u1d', off: -0.5, k: 0 }; }
+  });
+  return st;
+}
+function stairUpdate(s, rf) {
+  if (s.rule === '1u2d') { if (rf) { if (++s.k >= 2) { s.off -= STEP; s.k = 0; } } else { s.off += STEP; s.k = 0; } }
+  else { if (!rf) { if (++s.k >= 2) { s.off += STEP; s.k = 0; } } else { s.off -= STEP; s.k = 0; } }
+  s.off = Math.max(-OFF_LIM, Math.min(OFF_LIM, Math.round(s.off * 1000) / 1000));
+}
+function runQueue(stairs, nPer) { const q = []; for (const k of Object.keys(stairs)) for (let i = 0; i < nPer; i++) q.push(k); return shuffle(q); }
+
+/* ---------------- analysis ---------------- */
+function fitCG(trials) {   // cumulative Gaussian per condition: PSE mu and slope sd
+  const r = nelderMead(x => { const sd = Math.exp(x[1]); if (sd < 0.02 || sd > 5) return 1e9; return nllOf(trials, t => LAPSE / 2 + (1 - LAPSE) * Phi((t.off - x[0]) / sd)); }, [0, Math.log(0.5)], 0.3);
+  return { mu: r.x[0], sd: Math.exp(r.x[1]), nll: r.f };
+}
+function analyze(trials) {
+  const fitT = trials.filter(t => CONDS[t.c].run < 2), predT = trials.filter(t => CONDS[t.c].run === 2);
+  if (fitT.length < 20) return null;
+  const th = x => ({ sA: Math.exp(x[0]), sB: Math.exp(x[1]), sR: Math.exp(x[2]), a: x[3] });
+  const obj = x => { const p = th(x); if ([p.sA, p.sB, p.sR].some(v => v < 0.03 || v > 3) || Math.abs(p.a) > 20) return 1e9; return nllOf(fitT, t => pRef(CONDS[t.c], t.off, p, 'opt')); };
+  let best = null;
+  for (const a0 of [-3, -1, 0.5]) { let r = nelderMead(obj, [Math.log(0.4), Math.log(0.4), Math.log(0.3), a0], 0.4, 1200); r = nelderMead(obj, r.x, 0.1, 600); if (!best || r.f < best.f) best = r; }
+  const fit = th(best.x);
+  const res = { fit, nllFit: best.f, nFit: fitT.length, nPred: predT.length, pred: {}, cg: {}, conds: {} };
+  // per-condition descriptive fits
+  CONDS.forEach((c, i) => { const tr = trials.filter(t => t.c === i); if (tr.length >= 8) res.cg[i] = { ...fitCG(tr), n: tr.length }; });
+  if (predT.length) {
+    for (const m of MODELS) res.pred[m.key] = nllOf(predT, t => pRef(CONDS[t.c], t.off, fit, m.key));
+    res.chance = predT.length * Math.LN2;
+    const groups = {}; for (const t of predT) { const k = t.c + '|' + t.off.toFixed(3); (groups[k] = groups[k] || [0, 0])[0]++; if (t.rf) groups[k][1]++; }
+    res.data = Object.values(groups).reduce((s, [n, k]) => s - (k ? k * Math.log(k / n) : 0) - (n - k ? (n - k) * Math.log((n - k) / n) : 0), 0);
+    res.cgPred = CONDS.reduce((s, c, i) => s + (c.run === 2 && res.cg[i] ? res.cg[i].nll : 0), 0);
+    res.best = MODELS.reduce((b, m) => res.pred[m.key] < res.pred[b] ? m.key : b, 'opt');
+  }
+  return res;
+}
+
+/* ---------------- stimulus rendering ---------------- */
+const Stage = { cv: $('#stage'), ppd: 40, W: 0, H: 0, D: 0, win: null };
+function readPPD() {
+  const card = +$('#e-card').value, dist = +$('#e-dist').value * 10;   // px for 85.6 mm, viewing distance in mm
+  return card / 85.6 * dist * Math.tan(Math.PI / 180);
+}
+function setupStage() {
+  const ppd = Stage.ppd = readPPD();
+  Stage.D = Math.round(4 * ppd); if (Stage.D % 2) Stage.D++;
+  Stage.W = Math.round(17 * ppd); Stage.H = Math.round(6 * ppd);
+  Stage.cv.width = Stage.W; Stage.cv.height = Stage.H; Stage.cv.style.width = Stage.W + 'px'; Stage.cv.style.height = Stage.H + 'px';
+  const D = Stage.D, R = D / 2, w = new Float32Array(D * D);
+  for (let y = 0; y < D; y++) for (let x = 0; x < D; x++) { const r = Math.hypot(x + 0.5 - R, y + 0.5 - R) / R; w[y * D + x] = r < 1 ? 0.5 * (1 + Math.cos(Math.PI * r)) : 0; }
+  Stage.win = w; Stage.img = Stage.cv.getContext('2d').createImageData(D, D);
+  drawFrame({ fix: true });
+}
+// band-limited noise grating profile (bandwidth 0.04·sf), normalised to unit peak
+function profile(sf, len, ppd, rng) {
+  const p = new Float32Array(len), n = 24, bw = 0.04 * sf; let mx = 0;
+  for (let i = 0; i < n; i++) {
+    const f = (sf - bw / 2 + bw * (i + 0.5) / n) / ppd * 2 * Math.PI, ph = rng() * 2 * Math.PI;
+    for (let x = 0; x < len; x++) p[x] += Math.cos(f * x + ph);
+  }
+  for (let x = 0; x < len; x++) mx = Math.max(mx, Math.abs(p[x]));
+  for (let x = 0; x < len; x++) p[x] /= mx;
+  return p;
+}
+function makeStim(kind, v, set, rng) {
+  const len = Stage.D + Math.ceil(2 * 12 * 0.6 * Stage.ppd) + 4, comps = [];
+  const cA = kind === 'R' ? set.cR : set.cA, cB = kind === 'R' ? set.cR : set.cB;
+  if (kind !== 'B') comps.push({ c: cA / 100, p: profile(set.sfA, len, Stage.ppd, rng) });
+  if (kind !== 'A') comps.push({ c: cB / 100, p: profile(set.sfB, len, Stage.ppd, rng) });
+  return { v, comps, len };
+}
+function drawPatch(ctx, st, cx, cy, tms, dir, amp) {
+  const D = Stage.D, img = Stage.img, d = img.data, w = Stage.win;
+  const shift = dir * st.v * tms / 1000 * Stage.ppd, base = (st.len - D) / 2 - shift;
+  const i0 = Math.floor(base), fr = base - i0;
+  const row = new Float32Array(D);
+  for (let x = 0; x < D; x++) { let s = 0; for (const c of st.comps) { const a = c.p[i0 + x], b = c.p[i0 + x + 1]; s += c.c * (a + fr * (b - a)); } row[x] = s; }
+  for (let y = 0, k = 0, j = 0; y < D; y++) for (let x = 0; x < D; x++, k++, j += 4) {
+    let L = 128 * (1 + amp * w[k] * row[x]); L = L < 0 ? 0 : L > 255 ? 255 : L;
+    d[j] = d[j + 1] = d[j + 2] = L; d[j + 3] = 255;
+  }
+  ctx.putImageData(img, Math.round(cx - D / 2), Math.round(cy - D / 2));
+}
+function drawFrame(f) {
+  const ctx = Stage.cv.getContext('2d'), W = Stage.W, H = Stage.H, ppd = Stage.ppd, cx = W / 2, cy = H / 2;
+  ctx.fillStyle = 'rgb(128,128,128)'; ctx.fillRect(0, 0, W, H);
+  if (f.trial) { const t = f.trial; drawPatch(ctx, t.left, cx - 6 * ppd, cy, f.tms, t.dir, f.amp); drawPatch(ctx, t.right, cx + 6 * ppd, cy, f.tms, t.dir, f.amp); }
+  if (f.ind) { const s = 0.3 * ppd; ctx.fillStyle = '#fff'; ctx.fillRect(cx + f.ind * 0.6 * ppd - s / 2, cy - s / 2, s, s); }
+  if (f.fix) { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(cx, cy, Math.max(2, 0.08 * ppd), 0, 7); ctx.fill(); }
+  if (f.text) { ctx.fillStyle = '#111'; ctx.font = `600 ${Math.round(Math.max(14, 0.45 * ppd))}px ${getComputedStyle(document.body).fontFamily}`; ctx.textAlign = 'center'; ctx.fillText(f.text, cx, cy - 0.8 * ppd); }
+}
+
+/* ======================= EXPERIMENT ======================= */
+const E = { phase: 'idle', run: -1, stairs: null, queue: [], trials: [], cur: null, set: null, raf: 0, timer: 0, practice: 0, session: null };
+function expSettings() { return { sfA: +$('#e-sfA').value, sfB: +$('#e-sfB').value, cA: +$('#e-cA').value, cB: +$('#e-cB').value, cR: +$('#e-cR').value, nPer: +$('#e-len').value }; }
+function syncSetup() {
+  $('#cardbox').style.width = $('#e-card').value + 'px';
+  $('#eo-dist').textContent = $('#e-dist').value + ' cm';
+  $('#eo-ppd').textContent = readPPD().toFixed(1) + ' px/°';
+  $('#eo-cA').textContent = $('#e-cA').value + '%'; $('#eo-cB').textContent = $('#e-cB').value + '%'; $('#eo-cR').textContent = $('#e-cR').value + '%';
+  try { localStorage.setItem('si-cal', JSON.stringify({ card: $('#e-card').value, dist: $('#e-dist').value })); } catch (e) {}
+  if (E.phase === 'idle') setupStage();
+}
+function setRunsChip() {   // chip 0 = practice, chips 1–3 = runs
+  const chips = $('#e-runs').children, at = E.phase === 'idle' ? -1 : E.phase === 'practice' ? 0 : E.phase === 'done' ? 4 : E.run + 1;
+  for (let i = 0; i < 4; i++) chips[i].className = i < at || (E.phase === 'break' && i === at) ? 'done' : i === at ? 'on' : '';
+}
+function lockSetup(on) { for (const el of document.querySelectorAll('#tab-exp .controls input, #tab-exp .controls select, #e-card')) el.disabled = on; $('#e-start').disabled = on; $('#e-stop').disabled = !on; }
+function startSession() {
+  setupStage();
+  if (Stage.W > $('.stagewrap').clientWidth + 2) { $('#e-status').textContent = 'The window is too narrow for this calibration. Widen it or sit further away.'; return; }
+  E.set = expSettings(); E.trials = []; E.run = -1; E.phase = 'practice'; E.practice = 0;
+  E.session = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), started: new Date().toISOString() };
+  lockSetup(true); setRunsChip(); $('#e-download').disabled = true;
+  $('#e-status').textContent = 'Practice: 6 trials';
+  nextTrial();
+}
+function abortSession() { cancelAnimationFrame(E.raf); clearTimeout(E.timer); E.phase = 'idle'; E.run = -1; lockSetup(false); setButtons(false); setRunsChip(); drawFrame({ fix: true }); $('#e-prompt').textContent = 'Session aborted. Nothing was saved.'; $('#e-status').textContent = 'Ready'; }
+function beginRun(r) {
+  E.run = r; E.phase = 'run'; E.stairs = newStairs(r); E.queue = runQueue(E.stairs, E.set.nPer); E.runLen = E.queue.length; setRunsChip();
+  nextTrial();
+}
+function showBreak(text, next) {
+  E.phase = 'break'; setButtons(false); setRunsChip();
+  drawFrame({ fix: false, text: '' });
+  $('#e-prompt').innerHTML = `${text} Press <kbd>Space</kbd> or the button to continue.`;
+  $('#e-faster').disabled = false; $('#e-faster').textContent = 'Continue'; $('#e-slower').hidden = true;
+  E.onContinue = () => { $('#e-faster').textContent = '↑ Marked was faster'; $('#e-slower').hidden = false; next(); };
+}
+function nextTrial() {
+  let condIdx, key = null, off;
+  if (E.phase === 'practice') {
+    if (E.practice >= 6) { showBreak('Practice done. Run 1 shows gratings of a single spatial frequency.', () => beginRun(0)); return; }
+    condIdx = E.practice % 2; off = (Math.random() < 0.5 ? -1 : 1) * 0.7;
+  } else {
+    if (!E.queue.length) {
+      if (E.run < 2) { const r = E.run; showBreak(`Run ${r + 1} of 3 complete. Take a short break.`, () => beginRun(r + 1)); return; }
+      return finishSession();
+    }
+    key = E.queue.pop(); condIdx = E.stairs[key].c; off = E.stairs[key].off;
+  }
+  const c = CONDS[condIdx], rng = mulberry((Math.random() * 1e9) | 0);
+  const testLeft = Math.random() < 0.5, ind = Math.random() < 0.5 ? -1 : 1, dir = Math.random() < 0.5 ? -1 : 1;
+  const test = makeStim(c.test, V_TEST, E.set, rng), ref = makeStim(c.ref, toLin(ST + off), E.set, rng);
+  E.cur = { condIdx, key, off, testLeft, ind, dir, left: testLeft ? test : ref, right: testLeft ? ref : test };
+  if (E.phase === 'run') $('#e-status').textContent = `Run ${E.run + 1} of 3 · trial ${E.runLen - E.queue.length} of ${E.runLen}`;
+  $('#e-prompt').textContent = '';
+  setButtons(false);
+  const t0 = performance.now();
+  const frame = now => {
+    const t = now - t0;
+    if (t < 400) drawFrame({ fix: true });
+    else if (t < 1000) { const g = t - 400, amp = Math.min(1, g / 100, (600 - g) / 100); drawFrame({ fix: true, trial: E.cur, tms: g, amp: Math.max(0, amp) }); }
+    else if (t < 1200) drawFrame({ fix: true });
+    else if (t < 1500) { drawFrame({ fix: true, ind: E.cur.ind }); if (!E.cur.open) { E.cur.open = true; E.cur.t1 = now; setButtons(true); $('#e-prompt').textContent = 'Was the marked grating faster or slower?'; } }
+    else { drawFrame({ fix: true }); return; }
+    E.raf = requestAnimationFrame(frame);
+  };
+  E.raf = requestAnimationFrame(frame);
+}
+function setButtons(on) { $('#e-faster').disabled = !on; $('#e-slower').disabled = !on; }
+function respond(faster) {
+  if (E.phase === 'break') { if (E.onContinue) { const f = E.onContinue; E.onContinue = null; f(); } return; }
+  if (!E.cur || !E.cur.open || E.cur.answered) return;
+  E.cur.answered = true; setButtons(false);
+  const cur = E.cur, refSide = cur.testLeft ? 1 : -1, markedRef = cur.ind === refSide;
+  const rf = markedRef ? faster : !faster;
+  if (E.phase === 'practice') E.practice++;
+  else {
+    E.trials.push({ c: cur.condIdx, off: cur.off, rf: rf ? 1 : 0, ind: cur.ind, ts: cur.testLeft ? -1 : 1, dir: cur.dir, rt: Math.round(performance.now() - cur.t1) });
+    stairUpdate(E.stairs[cur.key], rf);
+  }
+  cancelAnimationFrame(E.raf); drawFrame({ fix: true }); $('#e-prompt').textContent = '';
+  E.timer = setTimeout(nextTrial, 500);
+}
+function finishSession() {
+  E.phase = 'done'; setRunsChip(); lockSetup(false); setButtons(false); drawFrame({ fix: true });
+  E.session.finished = new Date().toISOString();
+  $('#e-prompt').textContent = 'Session complete. Thank you.'; $('#e-status').textContent = `${E.trials.length} trials recorded`;
+  const res = analyze(E.trials);
+  const payload = buildPayload(res);
+  E.payload = payload; $('#e-download').disabled = false;
+  try { const all = JSON.parse(localStorage.getItem('si-sessions') || '[]'); all.push(payload); localStorage.setItem('si-sessions', JSON.stringify(all.slice(-20))); } catch (e) {}
+  upload(payload);
+  showResults('Your session', E.trials, res, null);
+}
+function buildPayload(res) {
+  return {
+    version: 1, session_id: E.session.id, participant: $('#e-part').value.trim().slice(0, 24),
+    started: E.session.started, finished: E.session.finished, user_agent: navigator.userAgent,
+    screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1 }, px_per_deg: +Stage.ppd.toFixed(2),
+    settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, step: STEP },
+    conditions: CONDS.map(c => c.id),
+    fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, sigma_R: res.fit.sR, prior_a: res.fit.a, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best } : null,
+    trials: E.trials.map(t => [t.c, t.off, t.rf, t.ind, t.ts, t.dir, t.rt]),
+    trial_fields: ['cond', 'ref_minus_test_logspeed', 'ref_seen_faster', 'marked_side', 'test_side', 'drift_dir', 'rt_ms']
+  };
+}
+function upload(payload) {
+  if (!SHEET_ENDPOINT) { $('#e-save').textContent = 'Uploading is not configured on this copy of the page. Download the session to keep it.'; return; }
+  $('#e-save').textContent = 'Saving your session…';
+  fetch(SHEET_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+    .then(() => { $('#e-save').textContent = 'Session sent to the study’s data sheet. You can also download a copy.'; })
+    .catch(() => { $('#e-save').textContent = 'Upload failed. Please download the session and send the file to the experimenter.'; });
+}
+function download(payload) {
+  const blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `signal-integration-${payload.participant || 'anon'}-${payload.session_id.slice(0, 8)}.json`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+$('#e-download').addEventListener('click', () => E.payload && download(E.payload));
+$('#e-load').addEventListener('change', ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  f.text().then(txt => {
+    const p = JSON.parse(txt), trials = p.trials.map(r => ({ c: r[0], off: r[1], rf: r[2] }));
+    showResults(`Session ${p.participant || ''} ${(p.session_id || '').slice(0, 8)}`, trials, analyze(trials), null);
+    $('#results').scrollIntoView({ behavior: 'smooth' });
+  }).catch(() => { $('#e-save').textContent = 'That file could not be read as a session.'; });
+  ev.target.value = '';
+});
+$('#e-start').addEventListener('click', startSession);
+$('#e-stop').addEventListener('click', abortSession);
+$('#e-faster').addEventListener('click', () => respond(true));
+$('#e-slower').addEventListener('click', () => respond(false));
+document.addEventListener('keydown', e => {
+  if ($('#tab-exp').hidden || E.phase === 'idle' || E.phase === 'done') return;
+  if (E.phase === 'break' && (e.key === ' ' || e.key === 'ArrowUp')) { e.preventDefault(); respond(true); return; }
+  if (e.key === 'ArrowUp' || e.key === 'f') { e.preventDefault(); respond(true); }
+  if (e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); respond(false); }
+});
+for (const id of ['#e-card', '#e-dist', '#e-cA', '#e-cB', '#e-cR', '#e-sfA', '#e-sfB']) $(id).addEventListener('input', syncSetup);
+
+/* ======================= SIMULATION ======================= */
+function simTruth() { return { sA: +$('#s-sA').value, sB: +$('#s-sB').value, sR: +$('#s-sR').value, a: +$('#s-a').value, rule: $('#s-rule').value, nPer: +$('#s-n').value }; }
+function simSession(T) {
+  const trials = [];
+  for (let run = 0; run < 3; run++) {
+    const stairs = newStairs(run), q = runQueue(stairs, T.nPer);
+    while (q.length) {
+      const k = q.pop(), s = stairs[k], c = CONDS[s.c];
+      const Mt = moments(c.test, T, T.rule), Mr = moments(c.ref, T, T.rule);
+      let rf = (s.off + Mr.m + Math.sqrt(Mr.v) * randn()) > (Mt.m + Math.sqrt(Mt.v) * randn());
+      if (Math.random() < LAPSE) rf = Math.random() < 0.5;
+      trials.push({ c: s.c, off: s.off, rf: rf ? 1 : 0 }); stairUpdate(s, rf);
+    }
+  }
+  return trials;
+}
+function syncSim() { const T = simTruth(); $('#so-sA').textContent = T.sA.toFixed(2); $('#so-sB').textContent = T.sB.toFixed(2); $('#so-sR').textContent = T.sR.toFixed(2); $('#so-a').textContent = T.a.toFixed(1); }
+$('#s-run').addEventListener('click', () => { const T = simTruth(), tr = simSession(T); showResults('Simulated session', tr, analyze(tr), T); $('#s-status').textContent = `${tr.length} simulated trials`; });
+$('#s-rep').addEventListener('click', () => {
+  const T = simTruth(), wins = { opt: 0, max: 0, avg: 0 }, est = [];
+  let i = 0; $('#s-rep').disabled = true;
+  const step = () => {
+    for (let k = 0; k < 5 && i < 50; k++, i++) { const r = analyze(simSession(T)); wins[r.best]++; est.push(r.fit); }
+    $('#s-status').textContent = `Session ${i} of 50…`;
+    if (i < 50) { setTimeout(step, 0); return; }
+    $('#s-rep').disabled = false; $('#s-status').textContent = `50 sessions with the ${MODELS.find(m => m.key === T.rule).name.toLowerCase()} observer`;
+    const mean = f => est.reduce((s, e) => s + f(e), 0) / est.length;
+    $('#s-repcard').hidden = false;
+    $('#s-reptable').innerHTML = `<tr><th>Model</th><th>Sessions where it predicted best</th></tr>` +
+      MODELS.map(m => `<tr><td><span class="sw" style="background:var(${m.cls})"></span>${m.name}${m.key === T.rule ? ' <span class="status">(true rule)</span>' : ''}</td><td class="n">${wins[m.key]} / 50</td></tr>`).join('') +
+      `<tr><td>Mean fitted σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub>, a</td><td class="n">${mean(e => e.sA).toFixed(2)}, ${mean(e => e.sB).toFixed(2)}, ${mean(e => e.sR).toFixed(2)}, ${mean(e => e.a).toFixed(2)} <span class="status">(true ${T.sA}, ${T.sB}, ${T.sR}, ${T.a})</span></td></tr>`;
+  };
+  step();
+});
+for (const id of ['#s-sA', '#s-sB', '#s-sR', '#s-a']) $(id).addEventListener('input', syncSim);
+
+/* ======================= RESULTS ======================= */
+let TK = {}, LAST = null;
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); TK = { ink: g('--ink'), ink2: g('--ink-2'), ink3: g('--ink-3'), rule: g('--rule'), panel: g('--panel'), data: g('--data'), opt: g('--opt'), max: g('--max'), avg: g('--avg'), font: g('--font-data') }; }
+function prep(cv) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return null;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h); return { ctx, w, h };
+}
+function txt(ctx, s, x, y, al = 'left', bl = 'alphabetic', col = TK.ink3, sz = 11) { ctx.fillStyle = col; ctx.font = `${sz}px ${TK.font}`; ctx.textAlign = al; ctx.textBaseline = bl; ctx.fillText(s, x, y); }
+function marker(ctx, x, y, r, shape, fill, ring) {
+  ctx.beginPath();
+  if (shape === 'square') ctx.rect(x - r * .9, y - r * .9, r * 1.8, r * 1.8);
+  else if (shape === 'diamond') { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.2, y); ctx.lineTo(x, y + r * 1.2); ctx.lineTo(x - r * 1.2, y); ctx.closePath(); }
+  else ctx.arc(x, y, r, 0, Math.PI * 2);
+  if (ring) { ctx.lineWidth = 2; ctx.strokeStyle = fill; ctx.fillStyle = TK.panel; ctx.fill(); ctx.stroke(); }
+  else { ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = TK.panel; ctx.stroke(); }
+}
+const nearest = pts => (mx, my) => { let b = null, bd = 196; for (const p of pts) { const d = (p.x - mx) ** 2 + (p.y - my) ** 2; if (d < bd) { bd = d; b = p.html; } } return b; };
+const mcol = k => TK[k];
+
+function showResults(title, trials, res, truth) {
+  LAST = { title, trials, res, truth };
+  $('#r-title').textContent = `Results · ${title}`;
+  if (!res) { $('#r-body').hidden = true; $('#r-verdict').textContent = 'Not enough data to fit the model.'; return; }
+  $('#r-body').hidden = false;
+  const f = res.fit;
+  let v = `Fitted to the single-channel runs: σ<sub>A</sub> = <b>${f.sA.toFixed(2)}</b>, σ<sub>B</sub> = <b>${f.sB.toFixed(2)}</b>, σ<sub>R</sub> = <b>${f.sR.toFixed(2)}</b>, prior exponent a = <b>${f.a.toFixed(2)}</b>${truth ? ` (true ${truth.sA}, ${truth.sB}, ${truth.sR}, ${truth.a})` : ''}.`;
+  if (res.nPred) {
+    const best = MODELS.find(m => m.key === res.best);
+    v += ` Predicting the ${res.nPred} compound-grating trials without further fitting, <b>${best.name.toLowerCase()}</b> fits best (−log L ${res.pred[res.best].toFixed(1)}; chance ${res.chance.toFixed(1)}, data ${res.data.toFixed(1)}).`;
+    if (truth) v += ` The simulated observer used ${MODELS.find(m => m.key === truth.rule).name.toLowerCase()}.`;
+  } else v += ' Run 3 has no data yet, so no predictions can be compared.';
+  $('#r-verdict').innerHTML = v;
+  renderResults();
+  $('#r-table').innerHTML = `<tr><th>Condition</th><th>Trials</th><th>Data: PSE (°/s) / threshold <span class="nt">σ</span></th>${MODELS.map(m => `<th><span class="sw" style="background:var(${m.cls})"></span>${m.name}</th>`).join('')}</tr>` +
+    CONDS.map((c, i) => {
+      const cg = res.cg[i]; if (!cg) return '';
+      const bal = c.test === c.ref;
+      const dat = bal ? `σ = ${(cg.sd / Math.SQRT2).toFixed(2)}` : `${toLin(ST + cg.mu).toFixed(2)} °/s`;
+      const mv = MODELS.map(m => { const T = moments(c.test, f, m.key), R = moments(c.ref, f, m.key); return `<td class="n">${bal ? 'σ = ' + Math.sqrt(T.v).toFixed(2) : toLin(ST + T.m - R.m).toFixed(2) + ' °/s'}${c.run < 2 ? ' <span class="status">fit</span>' : ''}</td>`; }).join('');
+      return `<tr><td>${condName(c)}</td><td class="n">${cg.n}</td><td class="n">${dat}</td>${mv}</tr>`;
+    }).join('');
+}
+function renderResults() {
+  if (!LAST || !LAST.res) return;
+  readTokens();
+  const { trials, res } = LAST, f = res.fit;
+  drawGOP($('#c-gop'), res);
+  drawSummary($('#c-thr'), res, [0, 2, 4, 5], 'thr');
+  drawSummary($('#c-match'), res, [1, 3, 6], 'match');
+  const host = $('#c-psy');
+  if (host.children.length !== CONDS.length) { host.innerHTML = CONDS.map((c, i) => `<figure><figcaption>${condName(c)}${c.run === 2 ? ' · predicted' : ' · fit'}</figcaption><canvas class="chart" id="psy-${i}"></canvas></figure>`).join(''); }
+  CONDS.forEach((c, i) => drawPsy($('#psy-' + i), trials.filter(t => t.c === i), c, f));
+}
+// goodness of prediction on a scale from chance (0) to data (1)
+function drawGOP(cv, res) {
+  const g = prep(cv); if (!g) return; const { ctx, w, h } = g;
+  if (!res.nPred) { txt(ctx, 'available after run 3', w / 2, h / 2, 'center', 'middle'); cv._hit = null; return; }
+  const sc = nll => (res.chance - nll) / (res.chance - res.data);
+  const rows = MODELS.map(m => ({ name: m.name, col: mcol(m.key), val: sc(res.pred[m.key]), nll: res.pred[m.key] }));
+  const cgv = sc(res.cgPred), lo = Math.min(0, ...rows.map(r => r.val)) - 0.05, hi = 1.05;
+  const L = 12, R = 14, T = 10, B = 34, pw = w - L - R, ph = h - T - B, X = v => L + (v - lo) / (hi - lo) * pw;
+  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
+  for (const v of [0, 0.5, 1]) { ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke(); }
+  txt(ctx, 'chance', X(0), T + ph + 6, 'center', 'top'); txt(ctx, 'data', X(1), T + ph + 6, 'center', 'top');
+  txt(ctx, 'goodness of prediction', L + pw / 2, h - 2, 'center', 'bottom', TK.ink2);
+  ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = TK.ink3; ctx.beginPath(); ctx.moveTo(X(cgv), T); ctx.lineTo(X(cgv), T + ph); ctx.stroke(); ctx.restore();
+  const bh = Math.min(26, ph / 4.2), pts = [];
+  rows.forEach((r, i) => {
+    const y = T + 6 + i * (bh + 12), x0 = X(0), x1 = X(r.val);
+    ctx.fillStyle = r.col; const xa = Math.min(x0, x1), wd = Math.max(2, Math.abs(x1 - x0));
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(xa, y, wd, bh, 4) : ctx.rect(xa, y, wd, bh); ctx.fill();
+    txt(ctx, r.name, Math.max(x0, x1) + 6 > L + pw - 120 ? Math.min(x0, x1) + 6 : Math.max(x0, x1) + 6, y + bh / 2, 'left', 'middle', Math.max(x0, x1) + 6 > L + pw - 120 ? TK.panel : TK.ink, 11);
+    pts.push({ x: x1, y: y + bh / 2, html: `${r.name}<br>−log L = ${r.nll.toFixed(1)}<br>score ${r.val.toFixed(2)} (0 chance, 1 data)` });
+  });
+  txt(ctx, 'cum. Gaussian', X(cgv) - 4, T + ph - 4, 'right', 'alphabetic', TK.ink3, 10);
+  cv._hit = nearest(pts);
+}
+function drawSummary(cv, res, idxs, kind) {
+  const g = prep(cv); if (!g) return; const { ctx, w, h } = g, f = res.fit;
+  const L = 44, R = 10, T = 12, B = 40, pw = w - L - R, ph = h - T - B;
+  const val = (c, model) => { const Tm = moments(c.test, f, model), Rm = moments(c.ref, f, model); return kind === 'thr' ? Math.sqrt(Tm.v) : toLin(ST + Tm.m - Rm.m); };
+  const dat = i => res.cg[i] ? (kind === 'thr' ? res.cg[i].sd / Math.SQRT2 : toLin(ST + res.cg[i].mu)) : null;
+  const all = [];
+  idxs.forEach(i => { const d = dat(i); if (d != null) all.push(d); MODELS.forEach(m => all.push(val(CONDS[i], m.key))); });
+  let lo = kind === 'thr' ? 0 : Math.min(...all, V_TEST) * 0.85, hi = Math.max(...all, kind === 'thr' ? 0.5 : V_TEST) * 1.12;
+  const Y = v => T + (hi - v) / (hi - lo) * ph, X = k => L + (k + 0.5) / idxs.length * pw;
+  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
+  const step = kind === 'thr' ? (hi > 1 ? 0.5 : 0.2) : (hi - lo > 4 ? 1 : 0.5);
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) { ctx.beginPath(); ctx.moveTo(L, Y(v)); ctx.lineTo(L + pw, Y(v)); ctx.stroke(); txt(ctx, v.toFixed(1), L - 6, Y(v), 'right', 'middle'); }
+  if (kind === 'match') { ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = TK.ink3; ctx.beginPath(); ctx.moveTo(L, Y(V_TEST)); ctx.lineTo(L + pw, Y(V_TEST)); ctx.stroke(); ctx.restore(); txt(ctx, 'test 3°/s', L + 4, Y(V_TEST) - 4, 'left', 'bottom', TK.ink3, 10); }
+  const pts = [];
+  idxs.forEach((i, k) => {
+    const c = CONDS[i], x = X(k);
+    txt(ctx, label(c.test), x, T + ph + 8, 'center', 'top', TK.ink2, 11);
+    if (c.run < 2) { const y = Y(val(c, 'opt')); ctx.strokeStyle = TK.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 14, y); ctx.lineTo(x + 14, y); ctx.stroke(); pts.push({ x, y, html: `${condName(c)}<br>fit ${val(c, 'opt').toFixed(2)}` }); }
+    else MODELS.forEach((m, j) => { const xv = x + (j - 1) * 12, y = Y(val(c, m.key)); marker(ctx, xv, y, 5, m.shape, mcol(m.key)); pts.push({ x: xv, y, html: `${condName(c)}<br>${m.name}: ${val(c, m.key).toFixed(2)}` }); });
+    const d = dat(i); if (d != null) { const y = Y(d); marker(ctx, x, y, 5.5, 'circle', TK.data, true); pts.push({ x, y, html: `${condName(c)}<br>data ${d.toFixed(2)}` }); }
+  });
+  cv._hit = nearest(pts);
+}
+function drawPsy(cv, tr, c, f) {
+  const g = prep(cv); if (!g) return; const { ctx, w, h } = g;
+  const L = 34, R = 8, T = 8, B = 30, pw = w - L - R, ph = h - T - B;
+  const X = o => L + (o + OFF_LIM + 0.05) / (2 * OFF_LIM + 0.1) * pw, Y = p => T + (1 - p) * ph;
+  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
+  for (const p of [0, .5, 1]) { ctx.beginPath(); ctx.moveTo(L, Y(p)); ctx.lineTo(L + pw, Y(p)); ctx.stroke(); txt(ctx, p.toFixed(1), L - 5, Y(p), 'right', 'middle', TK.ink3, 10); }
+  for (const v of [1, 2, 3, 5, 8]) { const o = toLog(v) - ST; if (Math.abs(o) <= OFF_LIM) txt(ctx, String(v), X(o), T + ph + 4, 'center', 'top', TK.ink3, 10); }
+  txt(ctx, 'reference speed (°/s)', L + pw / 2, h - 1, 'center', 'bottom', TK.ink2, 10);
+  const curve = (model, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 80; k++) { const o = -OFF_LIM + 2 * OFF_LIM * k / 80, y = Y(pRef(c, o, f, model)); k ? ctx.lineTo(X(o), y) : ctx.moveTo(X(o), y); } ctx.stroke(); };
+  if (c.run < 2) curve('opt', TK.ink3); else MODELS.forEach(m => curve(m.key, mcol(m.key)));
+  const grp = {}; for (const t of tr) { const k = t.off.toFixed(3); (grp[k] = grp[k] || [0, 0])[0]++; if (t.rf) grp[k][1]++; }
+  const pts = [];
+  for (const [k, [n, s]] of Object.entries(grp)) { const x = X(+k), y = Y(s / n); marker(ctx, x, y, 2.5 + Math.min(4, Math.sqrt(n)), 'circle', TK.data); pts.push({ x, y, html: `reference ${toLin(ST + +k).toFixed(2)} °/s<br>${s}/${n} “reference faster”` }); }
+  cv._hit = nearest(pts);
+}
+
+/* ---------------- tooltips, tabs, theme, startup ---------------- */
+const tip = $('#tip');
+document.addEventListener('pointermove', e => {
+  const cv = e.target, html = cv && cv.tagName === 'CANVAS' && cv._hit ? cv._hit(e.offsetX, e.offsetY) : null;
+  if (!html) { tip.style.opacity = 0; return; }
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect(); let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14; if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+});
+function showTab(name) {
+  if (name !== 'exp' && E.phase !== 'idle' && E.phase !== 'done') abortSession();
+  for (const t of ['exp', 'sim', 'model']) { $('#tab-' + t).hidden = t !== name; $('#tabbtn-' + t).setAttribute('aria-selected', String(t === name)); }
+  renderResults();
+}
+for (const t of ['exp', 'sim', 'model']) $('#tabbtn-' + t).addEventListener('click', () => showTab(t));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderResults);
+new MutationObserver(renderResults).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(renderResults); }).observe(document.body);
+
+try { const c = JSON.parse(localStorage.getItem('si-cal') || 'null'); if (c) { $('#e-card').value = c.card; $('#e-dist').value = c.dist; } } catch (e) {}
+syncSetup(); syncSim();
+// open with an example: a long simulated session of an optimally integrating observer
+{ const T = { ...simTruth(), nPer: 60 }, tr = simSession(T); showResults(`Example: simulated observer, ${tr.length} trials`, tr, analyze(tr), T); }
+</script>
+</body>
+</html>
