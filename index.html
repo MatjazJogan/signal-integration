@@ -193,22 +193,22 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
         </div>
         <div class="ctl">
           <span class="lbl">Channel B spatial frequency</span>
-          <select id="e-sfB"><option value="2">2 c/°</option><option value="4" selected>4 c/°</option></select>
+          <select id="e-sfB"><option value="2" selected>2 c/°</option><option value="4">4 c/°</option></select>
         </div>
         <div class="ctl">
           <label for="e-cA"><span>Channel A contrast</span> <output id="eo-cA"></output></label>
-          <input id="e-cA" type="range" min="2" max="60" step="1" value="8">
+          <input id="e-cA" type="range" min="2" max="60" step="1" value="9">
         </div>
         <div class="ctl">
           <label for="e-cB"><span>Channel B contrast</span> <output id="eo-cB"></output></label>
-          <input id="e-cB" type="range" min="2" max="60" step="1" value="16">
+          <input id="e-cB" type="range" min="2" max="60" step="1" value="13">
         </div>
         <div class="ctl">
           <label for="e-cR"><span>Reference contrast (total, broadband)</span> <output id="eo-cR"></output></label>
           <input id="e-cR" type="range" min="40" max="100" step="5" value="90">
         </div>
       </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both. The reference is broadband (octave bands from 0.5 to 4 c/°, our ABCD stimulus) at high contrast; the more reliable it is, the better it constrains the prior. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
+      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both; the default frequencies and contrasts (1 c/° at 9%, 2 c/° at 13%) are those of our original calibration. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display reference speeds are capped to avoid temporal aliasing. The reference is broadband (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast; the more reliable it is, the better it constrains the prior. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
     </details>
     <div class="btns">
       <button class="b" id="e-start">Start session</button>
@@ -446,7 +446,7 @@ function newStairs(run) {
 function stairUpdate(s, rf) {
   if (s.rule === '1u2d') { if (rf) { if (++s.k >= 2) { s.off -= STEP; s.k = 0; } } else { s.off += STEP; s.k = 0; } }
   else { if (!rf) { if (++s.k >= 2) { s.off += STEP; s.k = 0; } } else { s.off -= STEP; s.k = 0; } }
-  s.off = Math.max(-OFF_LIM, Math.min(OFF_LIM, Math.round(s.off * 1000) / 1000));
+  s.off = Math.max(-OFF_LIM, Math.min(s.hi ?? OFF_LIM, Math.round(s.off * 1000) / 1000));
 }
 function runQueue(stairs, nPer) { const q = []; for (const k of Object.keys(stairs)) for (let i = 0; i < nPer; i++) q.push(k); return shuffle(q); }
 
@@ -517,10 +517,14 @@ function profile(sf, len, ppd, rng) {
   for (let x = 0; x < len; x++) p[x] /= mx;
   return p;
 }
+function refBands(set) { const top = Math.max(set.sfA, set.sfB), b = []; for (let f = 0.5; f <= top + 1e-9; f *= 2) b.push(f); return [...new Set([...b, set.sfA, set.sfB])].sort((x, y) => x - y); }
+function maxSF(kind, set) { return kind === 'A' ? set.sfA : kind === 'B' ? set.sfB : kind === 'AB' ? Math.max(set.sfA, set.sfB) : Math.max(...refBands(set)); }
+// fastest speed (deg/s) a grating can move without temporal aliasing: at most 0.4 cycles per frame
+const vAlias = (kind, set, hz) => 0.8 * hz / (2 * maxSF(kind, set));
 function makeStim(kind, v, set, rng) {
   const len = Stage.D + Math.ceil(2 * 12 * 0.6 * Stage.ppd) + 4, comps = [];
   if (kind === 'R') {   // broadband reference, as ABCD in the paper: octave bands sharing the total contrast
-    const bands = [...new Set([0.5, 1, 2, 4, set.sfA, set.sfB])].sort((x, y) => x - y);
+    const bands = refBands(set);
     for (const sf of bands) comps.push({ c: set.cR / 100 / bands.length, p: profile(sf, len, Stage.ppd, rng) });
     return { v, comps, len };
   }
@@ -565,9 +569,16 @@ function setRunsChip() {   // chip 0 = practice, chips 1–3 = runs
   for (let i = 0; i < 4; i++) chips[i].className = i < at || (E.phase === 'break' && i === at) ? 'done' : i === at ? 'on' : '';
 }
 function lockSetup(on) { for (const el of document.querySelectorAll('#tab-exp .controls input, #tab-exp .controls select, #e-card')) el.disabled = on; $('#e-start').disabled = on; $('#e-stop').disabled = !on; }
-function startSession() {
+function measureRefresh() {
+  return new Promise(res => { const ts = []; const f = t => { ts.push(t); if (ts.length < 45) requestAnimationFrame(f); else { const d = ts.slice(5).map((t, i, a) => i ? t - a[i - 1] : 0).slice(1).sort((x, y) => x - y); res(1000 / d[Math.floor(d.length / 2)]); } }; requestAnimationFrame(f); });
+}
+async function startSession() {
   setupStage();
   if (Stage.W > $('.stagewrap').clientWidth + 2) { $('#e-status').textContent = 'The window is too narrow for this calibration. Widen it or sit further away.'; return; }
+  $('#e-status').textContent = 'Measuring the display refresh rate…';
+  E.hz = await measureRefresh();
+  const set0 = expSettings();
+  if (vAlias('AB', set0, E.hz) < V_TEST * 1.6) { $('#e-status').textContent = `This display refreshes at ${Math.round(E.hz)} Hz, too slowly for ${Math.max(set0.sfA, set0.sfB)} c/° gratings at 3°/s. Choose lower spatial frequencies.`; return; }
   E.set = expSettings(); E.trials = []; E.run = -1; E.phase = 'practice'; E.practice = 0;
   E.session = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), started: new Date().toISOString() };
   lockSetup(true); setRunsChip(); $('#e-download').disabled = true;
@@ -576,7 +587,9 @@ function startSession() {
 }
 function abortSession() { cancelAnimationFrame(E.raf); clearTimeout(E.timer); E.phase = 'idle'; E.run = -1; lockSetup(false); setButtons(false); setRunsChip(); drawFrame({ fix: true }); $('#e-prompt').textContent = 'Session aborted. Nothing was saved.'; $('#e-status').textContent = 'Ready'; }
 function beginRun(r) {
-  E.run = r; E.phase = 'run'; E.stairs = newStairs(r); E.queue = runQueue(E.stairs, E.set.nPer); E.runLen = E.queue.length; setRunsChip();
+  E.run = r; E.phase = 'run'; E.stairs = newStairs(r);
+  for (const st of Object.values(E.stairs)) { st.hi = Math.min(OFF_LIM, toLog(vAlias(CONDS[st.c].ref, E.set, E.hz)) - ST); st.off = Math.min(st.off, st.hi); }
+  E.queue = runQueue(E.stairs, E.set.nPer); E.runLen = E.queue.length; setRunsChip();
   nextTrial();
 }
 function showBreak(text, next) {
@@ -590,7 +603,7 @@ function nextTrial() {
   let condIdx, key = null, off;
   if (E.phase === 'practice') {
     if (E.practice >= 6) { showBreak('Practice done. Run 1 shows gratings of a single spatial frequency.', () => beginRun(0)); return; }
-    condIdx = E.practice % 2; off = (Math.random() < 0.5 ? -1 : 1) * 0.7;
+    condIdx = E.practice % 2; off = Math.min((Math.random() < 0.5 ? -1 : 1) * 0.7, toLog(vAlias(CONDS[condIdx].ref, E.set, E.hz)) - ST);
   } else {
     if (!E.queue.length) {
       if (E.run < 2) { const r = E.run; showBreak(`Run ${r + 1} of 3 complete. Take a short break.`, () => beginRun(r + 1)); return; }
@@ -647,7 +660,7 @@ function buildPayload(res) {
   return {
     version: 1, session_id: E.session.id, participant: $('#e-part').value.trim().slice(0, 24),
     started: E.session.started, finished: E.session.finished, user_agent: navigator.userAgent,
-    screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1 }, px_per_deg: +Stage.ppd.toFixed(2),
+    screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1, hz: +(E.hz || 0).toFixed(1) }, px_per_deg: +Stage.ppd.toFixed(2),
     settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, step: STEP },
     conditions: CONDS.map(c => c.id),
     fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, sigma_R: res.fit.sR, prior_a: res.fit.a, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best, boot_wins: res.boot ? res.boot.wins : null, prior_a_68: res.boot ? [res.boot.aLo, res.boot.aHi] : null } : null,
@@ -762,6 +775,8 @@ function showResults(title, trials, res, truth) {
     }
     if (truth) v += ` The simulated observer used ${MODELS.find(m => m.key === truth.rule).name.toLowerCase()}.`;
   } else v += ' Run 3 has no data yet, so no predictions can be compared.';
+  const weak = [['A', f.sA], ['B', f.sB]].filter(([, x]) => x > 1);
+  if (weak.length) v += ` <br><b>Check the stimulus:</b> responses to channel ${weak.map(w => w[0]).join(' and ')} were close to chance (σ̂ = ${weak.map(w => w[1].toFixed(2)).join(', ')}), so the channel was probably too faint to judge. With one channel this unreliable, optimal integration and the most reliable channel make almost the same prediction. Raise its contrast or use a lower spatial frequency.`;
   $('#r-verdict').innerHTML = v;
   renderResults();
   $('#r-table').innerHTML = `<tr><th>Condition</th><th>Trials</th><th>Data: PSE (°/s) / threshold <span class="nt">σ</span></th>${MODELS.map(m => `<th><span class="sw" style="background:var(${m.cls})"></span>${m.name}</th>`).join('')}</tr>` +
