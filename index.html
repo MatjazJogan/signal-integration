@@ -189,7 +189,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
       <div class="controls" style="margin-top:12px">
         <div class="ctl">
           <span class="lbl">Channel A spatial frequency</span>
-          <select id="e-sfA"><option value="0.5">0.5 c/°</option><option value="1" selected>1 c/°</option><option value="2">2 c/°</option></select>
+          <select id="e-sfA"><option value="0.5" selected>0.5 c/°</option><option value="1">1 c/°</option></select>
         </div>
         <div class="ctl">
           <span class="lbl">Channel B spatial frequency</span>
@@ -197,7 +197,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
         </div>
         <div class="ctl">
           <label for="e-cA"><span>Channel A contrast</span> <output id="eo-cA"></output></label>
-          <input id="e-cA" type="range" min="2" max="60" step="1" value="9">
+          <input id="e-cA" type="range" min="2" max="60" step="1" value="4">
         </div>
         <div class="ctl">
           <label for="e-cB"><span>Channel B contrast</span> <output id="eo-cB"></output></label>
@@ -208,7 +208,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
           <input id="e-cR" type="range" min="40" max="100" step="5" value="90">
         </div>
       </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both; the default frequencies and contrasts (1 c/° at 9%, 2 c/° at 13%) are those of our original calibration. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display reference speeds are capped to avoid temporal aliasing. The reference is broadband (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast; the more reliable it is, the better it constrains the prior. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
+      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both; by default 0.5 c/° at 4% and 2 c/° at 13%, close to our original calibration (3.0% and 12.7%). The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display reference speeds are capped to avoid temporal aliasing. The reference is broadband (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast; the more reliable it is, the better it constrains the prior. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
     </details>
     <div class="btns">
       <button class="b" id="e-start">Start session</button>
@@ -322,7 +322,7 @@ Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div
     <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
     <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement.</p>
     <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition, as our balanced ABCD condition fixed it in the original study. Each test is compared only with the reference: the slope of a test-against-reference function reflects √(σ<sub>X</sub>² + σ<sub>R</sub>²) and its PSE a(σ<sub>X</sub>² − σ<sub>R</sub>²), so once σ<sub>R</sub> is known both σ<sub>X</sub> and a follow, and balanced single-channel conditions add little. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
-    <p>The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
+    <p>Optimal integration assumes that the channels’ noise is independent, which is why the default test frequencies are two octaves apart. The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
     <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ<sub>R</sub> ≈ 0.15–0.2), the true rule predicts best in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in 70–90%. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
     <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
 </section>
@@ -769,10 +769,17 @@ function showResults(title, trials, res, truth) {
     if (res.boot) {
       const bt = res.boot, pc = k => Math.round(100 * bt.wins[k] / bt.B);
       v += ` Refitting runs 1–2 to ${bt.B} bootstrap resamples, the same model wins in <b>${pc(res.best)}%</b> of cases (optimal ${pc('opt')}%, most reliable ${pc('max')}%, averaging ${pc('avg')}%); the prior exponent lies in [${bt.aLo.toFixed(2)}, ${bt.aHi.toFixed(2)}] (68%).`;
-      if (bt.aHi - bt.aLo > 1.5) v += ' The prior exponent is poorly constrained, which mostly blurs the difference between optimal integration and the most reliable channel; a longer session or a more reliable reference helps.';
+      if (bt.aHi - bt.aLo > 1.5 && pc(res.best) < 80) v += ' The prior exponent is poorly constrained, which mostly blurs the difference between optimal integration and the most reliable channel; a longer session or a more reliable reference helps.';
     }
     if (truth) v += ` The simulated observer used ${MODELS.find(m => m.key === truth.rule).name.toLowerCase()}.`;
   } else v += ' Run 3 has no data yet, so no predictions can be compared.';
+  const iAB = CONDS.findIndex(c => c.test === 'AB'), dAB = res.cg[iAB] ? dataSigma(res, iAB) : null;
+  if (dAB != null && res.nPred) {
+    const pr = k => Math.sqrt(moments('AB', f, k).v), mp = k => toLin(ST + moments('AB', f, k).m - moments('R', f, k).m);
+    v += ` <br>Measured for A+B: noise σ = <b>${dAB.toFixed(2)}</b>, matching speed <b>${toLin(ST + res.cg[iAB].mu).toFixed(2)} °/s</b>; optimal integration predicts ${pr('opt').toFixed(2)} and ${mp('opt').toFixed(2)} °/s, the most reliable channel ${pr('max').toFixed(2)} and ${mp('max').toFixed(2)} °/s.`;
+    if (dAB > pr('opt') * 1.15 && f.a > -3.5) v += ' The compound is noisier than optimal integration of independent channels allows, as expected if the two channels overlap and their noise is correlated; spacing the frequencies further apart helps.';
+  }
+  if (f.a < -3.5) v += ` <br><b>Check the reference:</b> the fitted prior exponent (${f.a.toFixed(2)}) is unusually strong (our observers ranged from −1.5 to −5, average −2). Part of the speed difference between the test gratings and the reference may not come from the prior; it then inflates a and makes optimal integration predict too fast a compound.`;
   const weak = [['A', f.sA], ['B', f.sB]].filter(([, x]) => x > 1);
   if (weak.length) v += ` <br><b>Check the stimulus:</b> responses to channel ${weak.map(w => w[0]).join(' and ')} were close to chance (σ̂ = ${weak.map(w => w[1].toFixed(2)).join(', ')}), so the channel was probably too faint to judge. With one channel this unreliable, optimal integration and the most reliable channel make almost the same prediction. Raise its contrast or use a lower spatial frequency.`;
   $('#r-verdict').innerHTML = v;
