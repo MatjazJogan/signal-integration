@@ -203,12 +203,8 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
           <label for="e-cB"><span>Channel B contrast</span> <output id="eo-cB"></output></label>
           <input id="e-cB" type="range" min="2" max="60" step="1" value="13">
         </div>
-        <div class="ctl">
-          <label for="e-cR"><span>Reference contrast (total, broadband)</span> <output id="eo-cR"></output></label>
-          <input id="e-cR" type="range" min="40" max="100" step="5" value="90">
-        </div>
       </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both; by default 0.5 c/° at 4% and 2 c/° at 13%, close to our original calibration (3.0% and 12.7%). The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display reference speeds are capped to avoid temporal aliasing. The reference is broadband (octave bands from 0.5 c/° up to the higher test frequency, as our ABCD stimulus) at high contrast; the more reliable it is, the better it constrains the prior. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
+      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Test gratings drive channel A, channel B or both; by default 0.5 c/° at 4% and 2 c/° at 13%, close to our original calibration (3.0% and 12.7%). The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display reference speeds are capped to avoid temporal aliasing. The reference is the sum of octave bands from 0.5 c/° up to the higher test frequency, each at the contrast of the corresponding test channel (intermediate bands interpolated), as our ABCD stimulus combined the single-channel spectra. Test and reference therefore differ in which channels they drive, not in contrast. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
     </details>
     <div class="btns">
       <button class="b" id="e-start">Start session</button>
@@ -251,7 +247,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
     </div>
     <div class="ctl">
       <label for="s-sR"><span>Reference likelihood width σ<sub>R</sub></span> <output id="so-sR"></output></label>
-      <input id="s-sR" type="range" min="0.1" max="0.9" step="0.01" value="0.18">
+      <input id="s-sR" type="range" min="0.1" max="0.9" step="0.01" value="0.25">
     </div>
     <div class="ctl">
       <label for="s-a"><span>Prior exponent a</span> <output id="so-a"></output></label>
@@ -321,9 +317,9 @@ Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
 Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
     <p>The probability that the reference is seen as faster is Φ((E[ŝ<sub>ref</sub>] − E[ŝ<sub>test</sub>]) / √(Var<sub>ref</sub> + Var<sub>test</sub>)). The models coincide for single-channel stimuli, so runs 1 and 2 (each channel against the reference, and the reference against itself) fix σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a for all of them. Run 3 (the compound against the reference) is then predicted without further fitting. Optimal integration predicts that the compound is discriminated better than either component and, its likelihood being narrower, appears faster; averaging predicts a slower compound; the most reliable channel predicts that the compound behaves like its better component.</p>
     <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement.</p>
-    <p>As in the original study, the reference is a broadband stimulus described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition, as our balanced ABCD condition fixed it in the original study. Each test is compared only with the reference: the slope of a test-against-reference function reflects √(σ<sub>X</sub>² + σ<sub>R</sub>²) and its PSE a(σ<sub>X</sub>² − σ<sub>R</sub>²), so once σ<sub>R</sub> is known both σ<sub>X</sub> and a follow, and balanced single-channel conditions add little. Because the reference is more reliable than either channel, the prior exponent is identifiable even when the channels are equally reliable, which is when the three rules differ most.</p>
-    <p>Optimal integration assumes that the channels’ noise is independent, which is why the default test frequencies are two octaves apart. The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. A sharp reference constrains a best, and the analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
-    <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ<sub>R</sub> ≈ 0.15–0.2), the true rule predicts best in about 45–65% of sessions (33% by chance), and optimal integration is separated from the most reliable channel in 70–90%. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
+    <p>As in the original study, the reference combines the single-channel spectra at their own contrasts and is described by its own likelihood width σ<sub>R</sub>, here constrained by an interleaved reference-against-reference condition, as our balanced ABCD condition fixed it in the original study. Each test is compared only with the reference: the slope of a test-against-reference function reflects √(σ<sub>X</sub>² + σ<sub>R</sub>²) and its PSE a(σ<sub>X</sub>² − σ<sub>R</sub>²), so once σ<sub>R</sub> is known both σ<sub>X</sub> and a follow, and balanced single-channel conditions add little. Because the reference drives more channels than either test, it is more reliable, so the prior exponent is identifiable even when the two test channels are equally reliable, which is when the three rules differ most. Matching the reference contrast to the tests matters: a high-contrast reference makes low-contrast tests look slower for reasons the model does not capture, which inflates the prior exponent.</p>
+    <p>Optimal integration assumes that the channels’ noise is independent, which is why the default test frequencies are two octaves apart. The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²), so any error in a counts against it. The analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
+    <p>In simulations with the standard session (280 trials) and parameters typical of our original observers (σ ≈ 0.45 per channel, σ<sub>R</sub> ≈ 0.25), an observer who relies on the most reliable channel is identified as such against optimal integration in about 90% of sessions, whereas a truly optimal observer beats the most-reliable prediction in only about 55–65%: a single session favours the simpler prediction, and pooling sessions across observers, as in the original study, is needed for a firm conclusion. With nearly equal channels, the most reliable channel and averaging predict similar speeds and differ mainly in threshold. Longer sessions, or pooling across observers, sharpen the comparison.</p>
     <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
 </section>
 
@@ -515,15 +511,22 @@ function profile(sf, len, ppd, rng) {
   for (let x = 0; x < len; x++) p[x] /= mx;
   return p;
 }
+// per-band contrast of the reference: the test contrasts for A and B, log-linearly interpolated (or extrapolated) in
+// log spatial frequency for the other octave bands, so that the reference carries the same energy per channel as the tests
+function bandContrast(sf, set) {
+  if (sf === set.sfA) return set.cA; if (sf === set.sfB) return set.cB;
+  const t = (Math.log2(sf) - Math.log2(set.sfA)) / (Math.log2(set.sfB) - Math.log2(set.sfA));
+  return Math.min(60, Math.max(2, Math.exp(Math.log(set.cA) + t * (Math.log(set.cB) - Math.log(set.cA)))));
+}
 function refBands(set) { const top = Math.max(set.sfA, set.sfB), b = []; for (let f = 0.5; f <= top + 1e-9; f *= 2) b.push(f); return [...new Set([...b, set.sfA, set.sfB])].sort((x, y) => x - y); }
 function maxSF(kind, set) { return kind === 'A' ? set.sfA : kind === 'B' ? set.sfB : kind === 'AB' ? Math.max(set.sfA, set.sfB) : Math.max(...refBands(set)); }
 // fastest speed (deg/s) a grating can move without temporal aliasing: at most 0.4 cycles per frame
 const vAlias = (kind, set, hz) => 0.8 * hz / (2 * maxSF(kind, set));
 function makeStim(kind, v, set, rng) {
   const len = Stage.D + Math.ceil(2 * 12 * 0.6 * Stage.ppd) + 4, comps = [];
-  if (kind === 'R') {   // broadband reference, as ABCD in the paper: octave bands sharing the total contrast
+  if (kind === 'R') {   // broadband reference, as ABCD in the paper: the sum of the single-band spectra
     const bands = refBands(set);
-    for (const sf of bands) comps.push({ c: set.cR / 100 / bands.length, p: profile(sf, len, Stage.ppd, rng) });
+    for (const sf of bands) comps.push({ c: bandContrast(sf, set) / 100, p: profile(sf, len, Stage.ppd, rng) });
     return { v, comps, len };
   }
   if (kind !== 'B') comps.push({ c: set.cA / 100, p: profile(set.sfA, len, Stage.ppd, rng) });
@@ -553,12 +556,12 @@ function drawFrame(f) {
 
 /* ======================= EXPERIMENT ======================= */
 const E = { phase: 'idle', run: -1, stairs: null, queue: [], trials: [], cur: null, set: null, raf: 0, timer: 0, practice: 0, session: null };
-function expSettings() { return { sfA: +$('#e-sfA').value, sfB: +$('#e-sfB').value, cA: +$('#e-cA').value, cB: +$('#e-cB').value, cR: +$('#e-cR').value, nPer: +$('#e-len').value }; }
+function expSettings() { return { sfA: +$('#e-sfA').value, sfB: +$('#e-sfB').value, cA: +$('#e-cA').value, cB: +$('#e-cB').value, nPer: +$('#e-len').value }; }
 function syncSetup() {
   $('#cardbox').style.width = $('#e-card').value + 'px';
   $('#eo-dist').textContent = $('#e-dist').value + ' cm';
   $('#eo-ppd').textContent = readPPD().toFixed(1) + ' px/°';
-  $('#eo-cA').textContent = $('#e-cA').value + '%'; $('#eo-cB').textContent = $('#e-cB').value + '%'; $('#eo-cR').textContent = $('#e-cR').value + '%';
+  $('#eo-cA').textContent = $('#e-cA').value + '%'; $('#eo-cB').textContent = $('#e-cB').value + '%';
   try { localStorage.setItem('si-cal', JSON.stringify({ card: $('#e-card').value, dist: $('#e-dist').value })); } catch (e) {}
   if (E.phase === 'idle') setupStage();
 }
@@ -698,7 +701,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowUp' || e.key === 'f') { e.preventDefault(); respond(true); }
   if (e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); respond(false); }
 });
-for (const id of ['#e-card', '#e-dist', '#e-cA', '#e-cB', '#e-cR', '#e-sfA', '#e-sfB']) $(id).addEventListener('input', syncSetup);
+for (const id of ['#e-card', '#e-dist', '#e-cA', '#e-cB', '#e-sfA', '#e-sfB']) $(id).addEventListener('input', syncSetup);
 
 /* ======================= SIMULATION ======================= */
 function simTruth() { return { sA: +$('#s-sA').value, sB: +$('#s-sB').value, sR: +$('#s-sR').value, a: +$('#s-a').value, rule: $('#s-rule').value, nPer: +$('#s-n').value }; }
