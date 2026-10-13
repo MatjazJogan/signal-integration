@@ -176,7 +176,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
           <option value="45" selected>Standard: 270 trials (about 12 min)</option>
           <option value="70">Long: 420 trials (about 19 min)</option>
         </select>
-        <small>Calibration adds 100 trials (about 4 min).</small>
+        <small>Calibration adds 140 trials (about 6 min).</small>
       </div>
       <div class="ctl">
         <label for="e-dist"><span>Viewing distance</span> <output id="eo-dist"></output></label>
@@ -194,8 +194,8 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
       <summary>Stimulus settings</summary>
       <div class="controls" style="margin-top:12px">
         <div class="ctl">
-          <label class="check"><input id="e-calib" type="checkbox" checked> <span>Calibrate contrasts first (recommended)</span></label>
-          <small>Sets each grating to a common noise level, σ ≈ 0.42, as in the original study.</small>
+          <label class="check"><input id="e-calib" type="checkbox" checked> <span>Calibrate contrasts first (recommended for a first session)</span></label>
+          <small>Sets each grating to a common noise level, σ ≈ 0.42, as in the original study. Unticked, a later session continues from the contrasts refined by earlier sessions in this browser.</small>
         </div>
         <div class="ctl">
           <span class="lbl">Channel A spatial frequency</span>
@@ -207,11 +207,11 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
         </div>
         <div class="ctl">
           <label for="e-cA"><span>Channel A contrast (starting value if calibrated)</span> <output id="eo-cA"></output></label>
-          <input id="e-cA" type="range" min="0.5" max="60" step="0.5" value="4">
+          <input id="e-cA" type="range" min="0.3" max="60" step="0.1" value="4">
         </div>
         <div class="ctl">
           <label for="e-cB"><span>Channel B contrast (starting value if calibrated)</span> <output id="eo-cB"></output></label>
-          <input id="e-cB" type="range" min="0.5" max="60" step="0.5" value="13">
+          <input id="e-cB" type="range" min="0.3" max="60" step="0.1" value="13">
         </div>
       </div>
       <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. The test drifts at 2°/s (3°/s in the original study) and reference speeds range from about 0.6 to 5.4°/s. Gratings drive channel A, channel B or both; in every trial the two gratings have the same spectrum and differ only in speed; by default 0.5 c/° and 2 c/°. A calibration first sets the contrast of each so that its noise reaches σ ≈ 0.42, the level our observers were calibrated to (on average 3.0% and 12.7%); without it, the contrasts set here are used. Low contrasts are rendered with random dithering, so that steps finer than one grey level survive the 8-bit display. The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display speeds are capped to avoid temporal aliasing. Contrast is nominal, as the display is not gamma-corrected.</p>
@@ -240,6 +240,10 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
       <button class="b ghost" id="e-download" disabled>Download session (JSON)</button>
       <label class="b ghost" for="e-load" style="display:inline-block">Analyse a saved session…</label>
       <input id="e-load" type="file" accept="application/json,.json" hidden>
+    </div>
+    <div id="e-next" hidden style="display:grid;gap:8px">
+      <p class="prose" id="e-next-text"></p>
+      <div class="btns"><button class="b ghost" id="e-next-use">Use these contrasts next time</button><span class="status" id="e-next-status"></span></div>
     </div>
   </div>
 </section>
@@ -316,7 +320,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
 Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
 Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
     <p>Every condition is balanced, as in the corresponding conditions of the original study: test and reference have the same spectrum and differ only in speed. The prior then shifts both percepts alike and cancels, and the probability that the reference is seen as faster is Φ(Δs / (√2·σ)), so the slope of each psychometric function gives the noise of the stimulus directly. The single-channel conditions (A against A, B against B) fix σ<sub>A</sub> and σ<sub>B</sub>; the compound condition (A + B against A + B) is then predicted without further fitting. All three conditions are interleaved in each of three blocks, so that no block adapts the observer to one grating. Optimal integration predicts σ<sub>A</sub>σ<sub>B</sub> / √(σ<sub>A</sub>² + σ<sub>B</sub>²), the most reliable channel σ<sub>min</sub>, and averaging √(σ<sub>A</sub>² + σ<sub>B</sub>²) / 2.</p>
-    <p>We compare the models by goodness of prediction: the negative log-likelihood of the compound-condition responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 2°/s (3°/s in the original study) and reference speeds stay between about 0.6 and 5.4°/s. Because the PSE of a balanced condition is zero by symmetry, only the slope has to be measured, and it is measured best well away from the PSE. Each condition therefore runs two weighted up/down staircases converging on 85% and 15% “reference faster”; in simulations this identifies a truly optimal observer, against the most reliable channel, more often than staircases converging on 75% and 25% (about 73% against 61% of sessions). Before the main blocks, as in the original study, a calibration adjusts the contrast of each single-channel grating until discrimination at references ±0.4 log units from the test is 75% correct, which corresponds to σ = 0.6/√2 ≈ 0.42. Calibration matters for two reasons: equally reliable channels separate the models best, and well above threshold, speed discrimination saturates and the channels may suppress each other, so that their noise is no longer independent. Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement. The analysis reports how often the verdict survives bootstrap refits of the single-channel conditions.</p>
+    <p>We compare the models by goodness of prediction: the negative log-likelihood of the compound-condition responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 2°/s (3°/s in the original study) and reference speeds stay between about 0.6 and 5.4°/s. Because the PSE of a balanced condition is zero by symmetry, only the slope has to be measured, and it is measured best well away from the PSE. Each condition therefore runs two weighted up/down staircases converging on 85% and 15% “reference faster”; in simulations this identifies a truly optimal observer, against the most reliable channel, more often than staircases converging on 75% and 25% (about 73% against 61% of sessions). Before the main blocks, as in the original study, a calibration sets the contrast of each single-channel grating so that its noise is σ = 0.6/√2 ≈ 0.42. It models the noise as σ(c) = 0.42·(c*/c)<sup>β</sup> and uses a Bayesian adaptive procedure (the psi method) that chooses, for each trial, the contrast and reference speed that are most informative about the target contrast c*; references well away from the test, where the observer is mostly right, carry the most information about the noise. With 70 trials per grating this leaves each channel within about ±20% of the target, so the two channels can still differ. The single-channel trials of the main blocks are evidence about the same model, so after each session they refine the estimate, which is kept in the browser; the next session can start from the refined contrasts without recalibrating. In simulations the two channels end up within a factor of 1.25 of each other for 60% of observers after calibration, 75% after one session and 87% after two. Calibration matters for two reasons: equally reliable channels separate the models best, and well above threshold, speed discrimination saturates and the channels may suppress each other, so that their noise is no longer independent. Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement. The analysis reports how often the verdict survives bootstrap refits of the single-channel conditions.</p>
     <p>Balanced conditions measure precision only. Perceived speed, and with it the prior and the increase in speed that optimal integration predicts for compound stimuli, requires comparisons between different stimuli, which in the original study were made against the four-channel ABCD reference. Two further consequences follow from the predictions above. When the channels are equally reliable, optimal integration and averaging predict the same threshold, σ/√2, and only the most reliable channel (σ) is distinguished; channels of unequal reliability separate averaging from optimal integration but bring both closer to the most reliable channel. Optimal integration also assumes independent channel noise, which is why the default test frequencies are two octaves apart.</p>
     <p>In simulations with the standard session (270 trials) and two equally reliable channels (σ ≈ 0.45, typical of our original observers), a truly optimal observer beats the most-reliable prediction in about 75% of sessions and an observer relying on the most reliable channel is identified in about 85%; averaging cannot be told from optimal integration, because the predictions coincide. With channels of unequal reliability the separation is smaller still. Pooling sessions across observers sharpens the comparison.</p>
     <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
@@ -438,18 +442,71 @@ function placeOff(s) { s.off = Math.max(-OFF_LIM, Math.min(s.hi ?? OFF_LIM, Math
 // equilibrium where P(rf)·(1 − p) = (1 − P(rf))·p, i.e. P(rf) = p
 function stairUpdate(s, rf) { s.off += rf ? -STAIR.delta * (1 - s.p) : STAIR.delta * s.p; }
 /* ---------------- contrast calibration ----------------
-   As in the original study, the contrast of each single-channel grating is adjusted until its noise reaches a common
-   target, sigma = 0.6/sqrt2 (psychometric SD 0.6). References are fixed at +/-CAL.off around the test, where that
-   observer is correct on 75% of trials; a weighted up/down staircase on contrast (down d after a correct answer, up 3d
-   after an error) converges there. The calibrated contrast is the geometric mean over the second half of the trials. */
-const CAL = { n: 50, off: 0.4, d0: 0.08, d1: 0.04, cMin: 0.3, cMax: 60 };
-function newCal(set) { return { A: { ch: 'A', c: set.cA, cs: [] }, B: { ch: 'B', c: set.cB, cs: [] } }; }
-function calUpdate(s, correct) {
-  s.cs.push(s.c);
-  const d = s.cs.length <= 12 ? CAL.d0 : CAL.d1;
-  s.c = Math.max(CAL.cMin, Math.min(CAL.cMax, s.c * Math.pow(10, correct ? -d : 3 * d)));
+   As in the original study, the contrast of each single-channel grating is set so that its noise reaches a common
+   target, sigma = 0.6/sqrt2 (psychometric SD 0.6). The noise is modelled as sigma(c) = 0.42·(c* / c)^beta, and a
+   Bayesian adaptive procedure (psi method, Kontsevich & Tyler 1999) keeps a posterior over the target contrast c* and
+   the exponent beta for each channel. Each trial uses the contrast and reference offset that minimise the expected
+   entropy of c*; offsets well away from the test, where the observer is mostly correct, carry the most information
+   about the noise. The calibrated contrast is the posterior mean of c* (in log contrast). */
+const CAL = { n: 70, cMin: 0.3, cMax: 60, lapse: 0.04 };
+const CAL_OFF = [0.3, 0.45, 0.6, 0.75, 0.9];
+const CAL_SIG = 0.6 / Math.SQRT2;
+const CAL_C = Array.from({ length: 61 }, (_, i) => CAL.cMin * Math.pow(CAL.cMax / CAL.cMin, i / 60));
+const CAL_LT = Array.from({ length: 71 }, (_, i) => Math.log(0.15) + i / 70 * Math.log(100 / 0.15));
+const CAL_B = [0.25, 0.35, 0.5, 0.7, 1, 1.4, 2];
+// P(correct) for every design (offset, contrast) and parameter pair (c*, beta)
+const CAL_D = CAL_OFF.flatMap(off => CAL_C.map(c => ({ off, c })));
+const CAL_P = CAL_D.map(({ off, c }) => {
+  const row = new Float64Array(CAL_LT.length * CAL_B.length);
+  CAL_LT.forEach((lt, i) => CAL_B.forEach((b, j) => { row[i * CAL_B.length + j] = CAL.lapse / 2 + (1 - CAL.lapse) * Phi(off / (Math.SQRT2 * CAL_SIG * Math.exp(b * (lt - Math.log(c))))); }));
+  return row;
+});
+function calMarginalH(post) {   // entropy of the marginal posterior over c*
+  const nb = CAL_B.length; let H = 0;
+  for (let i = 0; i < CAL_LT.length; i++) { let m = 0; for (let j = 0; j < nb; j++) m += post[i * nb + j]; if (m > 0) H -= m * Math.log(m); }
+  return H;
 }
-function calEstimate(s) { const t = s.cs.slice(Math.floor(s.cs.length / 2)); return t.length ? Math.exp(t.reduce((a, c) => a + Math.log(c), 0) / t.length) : s.c; }
+function calNext(s) {
+  const n = s.post.length, p1 = new Float64Array(n), p0 = new Float64Array(n); let best = Infinity;
+  CAL_P.forEach((P, ci) => {
+    let z = 0;
+    for (let k = 0; k < n; k++) { p1[k] = s.post[k] * P[k]; p0[k] = s.post[k] - p1[k]; z += p1[k]; }
+    for (let k = 0; k < n; k++) { p1[k] /= z; p0[k] /= 1 - z; }
+    const eh = z * calMarginalH(p1) + (1 - z) * calMarginalH(p0);
+    if (eh < best) { best = eh; s.ci = ci; }
+  });
+  s.c = CAL_D[s.ci].c; s.off = CAL_D[s.ci].off;
+}
+function newCal() {
+  const mk = ch => { const n = CAL_LT.length * CAL_B.length, s = { ch, post: new Float64Array(n).fill(1 / n), cs: [] }; calNext(s); return s; };
+  return { A: mk('A'), B: mk('B') };
+}
+function calUpdate(s, correct) {
+  const P = CAL_P[s.ci]; let z = 0;
+  s.cs.push(s.c);
+  for (let k = 0; k < s.post.length; k++) { s.post[k] *= correct ? P[k] : 1 - P[k]; z += s.post[k]; }
+  for (let k = 0; k < s.post.length; k++) s.post[k] /= z;
+  calNext(s);
+}
+// update with any trial: reference offset off, contrast c (%), answer correct or not
+function calObserve(s, off, c, correct) {
+  const nb = CAL_B.length; let z = 0;
+  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) {
+    const k = i * nb + j, P = CAL.lapse / 2 + (1 - CAL.lapse) * Phi(Math.abs(off) / (Math.SQRT2 * CAL_SIG * Math.exp(CAL_B[j] * (CAL_LT[i] - Math.log(c)))));
+    s.post[k] *= correct ? P : 1 - P; z += s.post[k];
+  }
+  for (let k = 0; k < s.post.length; k++) s.post[k] /= z;
+}
+function calBeta(s) {   // posterior mean of the contrast exponent
+  const nb = CAL_B.length; let m = 0;
+  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) m += s.post[i * nb + j] * CAL_B[j];
+  return m;
+}
+function calEstimate(s) {
+  const nb = CAL_B.length; let m = 0;
+  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) m += s.post[i * nb + j] * CAL_LT[i];
+  return Math.exp(m);
+}
 function runQueue(stairs, nPer) { const q = []; for (const k of Object.keys(stairs)) for (let i = 0; i < nPer; i++) q.push(k); return shuffle(q); }
 
 /* ---------------- analysis ---------------- */
@@ -566,7 +623,7 @@ function setRunsChip() {   // chip 0 = practice, 1 = calibration, 2–4 = blocks
   const chips = $('#e-runs').children, n = chips.length;
   const at = E.phase === 'idle' ? -1 : E.phase === 'practice' ? 0 : E.phase === 'cal' ? 1 : E.phase === 'done' ? n : E.block < 0 ? 1 : E.block + 2;
   for (let i = 0; i < n; i++) chips[i].className = i < at || (E.phase === 'break' && i === at) ? 'done' : i === at ? 'on' : '';
-  chips[1].hidden = !(E.phase === 'idle' || !E.set ? $('#e-calib').checked : E.set.calibrate);
+  chips[1].hidden = !(E.phase === 'idle' || E.phase === 'done' || !E.set ? $('#e-calib').checked : E.set.calibrate);
 }
 function lockSetup(on) { for (const el of document.querySelectorAll('#tab-exp .controls input, #tab-exp .controls select, #e-card')) el.disabled = on; $('#e-start').disabled = on; $('#e-stop').disabled = !on; }
 function measureRefresh() {
@@ -579,7 +636,7 @@ async function startSession() {
   E.hz = await measureRefresh();
   const set0 = expSettings();
   if (vAlias('AB', set0, E.hz) < V_TEST * 1.6) { $('#e-status').textContent = `This display refreshes at ${Math.round(E.hz)} Hz, too slowly for ${Math.max(set0.sfA, set0.sfB)} c/° gratings at ${V_TEST}°/s. Choose lower spatial frequencies.`; return; }
-  E.set = expSettings(); E.set0 = { cA: E.set.cA, cB: E.set.cB }; E.trials = []; E.cal = null; E.block = -1; E.phase = 'practice'; E.practice = 0;
+  E.set = expSettings(); E.set0 = { cA: E.set.cA, cB: E.set.cB }; $('#e-next').hidden = true; E.trials = []; E.cal = E.set.calibrate ? null : (loadCal(E.set) || newCal()); E.calFrom = E.set.calibrate ? 'calibration' : E.cal.prior ? 'previous sessions' : 'none'; E.block = -1; E.phase = 'practice'; E.practice = 0;
   E.session = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), started: new Date().toISOString() };
   lockSetup(true); setRunsChip(); $('#e-download').disabled = true;
   $('#e-status').textContent = 'Practice: 6 trials';
@@ -587,7 +644,7 @@ async function startSession() {
 }
 function abortSession() { cancelAnimationFrame(E.raf); clearTimeout(E.timer); E.phase = 'idle'; E.block = -1; lockSetup(false); setButtons(false); setRunsChip(); drawFrame({ fix: true }); $('#e-prompt').textContent = 'Session aborted. Nothing was saved.'; $('#e-status').textContent = 'Ready'; }
 function beginCal() {
-  E.phase = 'cal'; E.cal = newCal(E.set); E.calTr = [];
+  E.phase = 'cal'; E.cal = newCal(); E.calTr = [];
   E.queue = shuffle([...Array(CAL.n).fill('A'), ...Array(CAL.n).fill('B')]); E.runLen = E.queue.length; setRunsChip();
   nextTrial();
 }
@@ -621,7 +678,7 @@ function nextTrial() {
     condIdx = E.practice % 2; off = Math.min((Math.random() < 0.5 ? -1 : 1) * 0.7, toLog(vAlias(CONDS[condIdx].ref, E.set, E.hz)) - ST);
   } else if (E.phase === 'cal') {
     if (!E.queue.length) return endCal();
-    key = E.queue.pop(); condIdx = key === 'A' ? 0 : 1; off = (Math.random() < 0.5 ? -1 : 1) * CAL.off;
+    key = E.queue.pop(); condIdx = key === 'A' ? 0 : 1; off = (Math.random() < 0.5 ? -1 : 1) * E.cal[key].off;
   } else {
     if (!E.queue.length) return finishSession();
     if (E.blockDone >= E.blockLen) { const b = E.block; showBreak(`Block ${b + 1} of ${BLOCKS} complete. Take a short break.`, () => beginBlock(b + 1)); return; }
@@ -678,14 +735,44 @@ function finishSession() {
   try { const all = JSON.parse(localStorage.getItem('si-sessions') || '[]'); all.push(payload); localStorage.setItem('si-sessions', JSON.stringify(all.slice(-20))); } catch (e) {}
   upload(payload);
   showResults('Your session', E.trials, res, null);
+  suggestNext(res);
 }
+/* Calibration leaves each channel within about ±20% of the target noise, so two channels can still end up unequal.
+   The single-channel trials of the main blocks are evidence about the same noise model, so they update the calibration
+   posterior; it is kept in this browser (per pair of spatial frequencies), and the next session can start from the
+   refined contrasts without recalibrating. In simulations, one session brings 75% of observers within a factor 1.25
+   between the channels (60% after calibration alone), two sessions 87%. */
+const calKey = set => `si-calpost-${set.sfA}-${set.sfB}`;
+function loadCal(set) {
+  try {
+    const d = JSON.parse(localStorage.getItem(calKey(set))), n = CAL_LT.length * CAL_B.length;
+    if (!d || d.A.length !== n || d.B.length !== n) return null;
+    const mk = (ch, a) => { const s = { ch, post: Float64Array.from(a), cs: [] }; calNext(s); return s; };
+    return { A: mk('A', d.A), B: mk('B', d.B), prior: true };
+  } catch (e) { return null; }
+}
+function saveCal(set, cal) { try { localStorage.setItem(calKey(set), JSON.stringify({ A: Array.from(cal.A.post, x => +x.toPrecision(5)), B: Array.from(cal.B.post, x => +x.toPrecision(5)) })); } catch (e) {} }
+function suggestNext(res) {
+  if (!res || !E.cal) return;
+  for (const t of E.trials) if (!CONDS[t.c].pred && t.off !== 0) { const ch = CONDS[t.c].test; calObserve(E.cal[ch], t.off, ch === 'A' ? E.set.cA : E.set.cB, (t.rf === 1) === t.off > 0); }
+  saveCal(E.set, E.cal);
+  const q = res.fit.sA / res.fit.sB, matched = Math.abs(Math.log(q)) < Math.log(1.25);
+  E.next = { cA: +calEstimate(E.cal.A).toFixed(1), cB: +calEstimate(E.cal.B).toFixed(1) };
+  $('#e-next-text').innerHTML = `Channel noise in this session: σ<sub>A</sub> = ${res.fit.sA.toFixed(2)}, σ<sub>B</sub> = ${res.fit.sB.toFixed(2)} (ratio ${q.toFixed(2)}); ${matched ? 'the channels were well matched.' : '<b>the channels were not well matched</b>, which weakens the comparison of the models.'} Combining the calibration with this session, contrasts of ${E.next.cA}% for A and ${E.next.cB}% for B should bring both to σ ≈ 0.42. The next session can use them without recalibrating, and each session refines them further.`;
+  $('#e-next-status').textContent = ''; $('#e-next').hidden = false;
+}
+$('#e-next-use').addEventListener('click', () => {
+  if (!E.next) return;
+  $('#e-cA').value = E.next.cA; $('#e-cB').value = E.next.cB; $('#e-calib').checked = false; syncSetup();
+  $('#e-next-status').textContent = `Set: A ${$('#e-cA').value}%, B ${$('#e-cB').value}%, calibration off (Stimulus settings).`;
+});
 function buildPayload(res) {
   return {
     version: 1, session_id: E.session.id, participant: $('#e-part').value.trim().slice(0, 24),
     started: E.session.started, finished: E.session.finished, user_agent: navigator.userAgent,
     screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1, hz: +(E.hz || 0).toFixed(1) }, px_per_deg: +Stage.ppd.toFixed(2),
-    settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, blocks: BLOCKS, placement: `interleaved weighted staircases, p ${STAIR.p}`,
-      calibration: E.set.calibrate ? { start_cA: E.set0.cA, start_cB: E.set0.cB, ref_offset: CAL.off, trials: E.calTr, trial_fields: ['channel', 'contrast_pct', 'ref_minus_test_logspeed', 'correct'] } : null },
+    settings: { ...E.set, contrast_source: E.calFrom, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, blocks: BLOCKS, placement: `interleaved weighted staircases, p ${STAIR.p}`,
+      calibration: E.set.calibrate ? { start_cA: E.set0.cA, start_cB: E.set0.cB, method: 'psi (c*, beta)', trials: E.calTr, trial_fields: ['channel', 'contrast_pct', 'ref_minus_test_logspeed', 'correct'] } : null },
     conditions: CONDS.map(c => c.id),
     fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best, boot_wins: res.boot ? res.boot.wins : null } : null,
     trials: E.trials.map(t => [t.c, t.off, t.rf, t.ind, t.ts, t.dir, t.rt]),
