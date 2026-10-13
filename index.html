@@ -207,7 +207,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
           <input id="e-cB" type="range" min="2" max="60" step="1" value="13">
         </div>
       </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting at 3°/s in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. Gratings drive channel A, channel B or both; in every trial the two gratings have the same spectrum and differ only in speed; by default 0.5 c/° at 4% and 2 c/° at 13%, close to our original calibration (3.0% and 12.7%). The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display speeds are capped to avoid temporal aliasing. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
+      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. The test drifts at 2°/s (3°/s in the original study) and reference speeds range from about 0.6 to 5.4°/s. Gratings drive channel A, channel B or both; in every trial the two gratings have the same spectrum and differ only in speed; by default 0.5 c/° at 4% and 2 c/° at 13%, close to our original calibration (3.0% and 12.7%). The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display speeds are capped to avoid temporal aliasing. The two test channels should be about equally reliable, as after our original calibration. Contrast is nominal, as the display is not gamma-corrected.</p>
     </details>
     <div class="btns">
       <button class="b" id="e-start">Start session</button>
@@ -257,7 +257,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
       </select>
     </div>
     <div class="ctl">
-      <span class="lbl">Trials per staircase</span>
+      <span class="lbl">Session length</span>
       <select id="s-n"><option value="25">25 (150 trials)</option><option value="45" selected>45 (270 trials)</option><option value="70">70 (420 trials)</option><option value="200">200 (1200 trials)</option></select>
     </div>
     <div class="ctl">
@@ -309,9 +309,9 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
 Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
 Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
     <p>Every condition is balanced, as in the corresponding conditions of the original study: test and reference have the same spectrum and differ only in speed. The prior then shifts both percepts alike and cancels, and the probability that the reference is seen as faster is Φ(Δs / (√2·σ)), so the slope of each psychometric function gives the noise of the stimulus directly. Runs 1 and 2 (A against A, B against B) fix σ<sub>A</sub> and σ<sub>B</sub>; run 3 (A + B against A + B) is then predicted without further fitting. Optimal integration predicts σ<sub>A</sub>σ<sub>B</sub> / √(σ<sub>A</sub>² + σ<sub>B</sub>²), the most reliable channel σ<sub>min</sub>, and averaging √(σ<sub>A</sub>² + σ<sub>B</sub>²) / 2.</p>
-    <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 3°/s, and reference speeds follow two interleaved staircases per condition (1-up-2-down and 2-up-1-down, step 0.1 log units). Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement. The analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
+    <p>We compare the models by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 2°/s (3°/s in the original study) and reference speeds stay between about 0.6 and 5.4°/s. Because the PSE of a balanced condition is zero by symmetry, only the slope has to be measured, and it is measured best with references about 1.6 psychometric standard deviations from the test; each trial is therefore placed at ±1.2–2.0·√2·σ̂, where σ̂ is the running estimate for that condition. In simulations this raises the rate at which a truly optimal observer is identified, against the most reliable channel, from about 60% (staircases converging on 71% and 29%) to about 75%. Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement. The analysis reports how often the verdict survives bootstrap refits of runs 1 and 2.</p>
     <p>Balanced conditions measure precision only. Perceived speed, and with it the prior and the increase in speed that optimal integration predicts for compound stimuli, requires comparisons between different stimuli, which in the original study were made against the four-channel ABCD reference. Two further consequences follow from the predictions above. When the channels are equally reliable, optimal integration and averaging predict the same threshold, σ/√2, and only the most reliable channel (σ) is distinguished; channels of unequal reliability separate averaging from optimal integration but bring both closer to the most reliable channel. Optimal integration also assumes independent channel noise, which is why the default test frequencies are two octaves apart.</p>
-    <p>In simulations with the standard session (270 trials) and two equally reliable channels (σ ≈ 0.45, typical of our original observers), optimal integration and the most reliable channel are told apart in about 70–75% of sessions, in either direction; averaging cannot be told from optimal integration, because the predictions coincide. With channels of unequal reliability the separation between optimal integration and the most reliable channel drops to about 50–65%. Pooling sessions across observers sharpens the comparison.</p>
+    <p>In simulations with the standard session (270 trials) and two equally reliable channels (σ ≈ 0.45, typical of our original observers), a truly optimal observer beats the most-reliable prediction in about 75% of sessions and an observer relying on the most reliable channel is identified in about 90%; averaging cannot be told from optimal integration, because the predictions coincide. With channels of unequal reliability the separation is smaller still. Pooling sessions across observers sharpens the comparison.</p>
     <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
 </section>
 
@@ -347,10 +347,10 @@ Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div
 const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx2EOkoPCRGvhTBzb09QTWJGzh2JR0i_vfHedtNzzki2NI6Y4QF7xMiSwCNcF2aMTkd/exec';
 
 const $ = s => document.querySelector(s);
-const S0 = 0.3, V_TEST = 3;
+const S0 = 0.3, V_TEST = 2;   // test speed (deg/s); the original study used 3 deg/s
 const toLog = v => Math.log(1 + v / S0), toLin = s => S0 * (Math.exp(s) - 1);
 const ST = toLog(V_TEST);
-const LAPSE = 0.01, STEP = 0.1, OFF_LIM = 1.2;
+const LAPSE = 0.01, STEP = 0.1, OFF_LIM = 0.9;   // reference speeds span ST ± 0.9 log units, about 0.6–5.4 deg/s
 const MODELS = [
   { key: 'opt', name: 'Optimal integration', cls: '--opt', shape: 'circle' },
   { key: 'max', name: 'Most reliable channel', cls: '--max', shape: 'square' },
@@ -419,17 +419,29 @@ function pRef(c, off, th, model) {
 }
 const nllOf = (trials, p) => trials.reduce((s, t) => { const q = p(t); return s - Math.log(t.rf ? q : 1 - q); }, 0);
 
-/* ---------------- staircases ---------------- */
+/* ---------------- adaptive stimulus placement ----------------
+   In a balanced condition the PSE is zero by symmetry and only the slope (sigma) is unknown. The slope is estimated
+   best with references at about +/-1.6 psychometric SDs (P ~ 0.06 and 0.94), so each trial is placed at
+   +/-k*sqrt2*sigma_hat, k drawn from [1.2, 2.0] and the sign at random, where sigma_hat is the running posterior
+   mean for that condition. Each condition keeps two slots ('u', 'd') only to balance trial counts. */
+const SIG_GRID = Array.from({ length: 60 }, (_, i) => 0.05 * Math.pow(50, i / 59));
+function sigmaHat(tr) {
+  if (tr.length < 6) return 0.45;
+  const ll = SIG_GRID.map(sg => tr.reduce((l, t) => { const q = LAPSE / 2 + (1 - LAPSE) * Phi(t.off / (Math.SQRT2 * sg)); return l + Math.log(t.rf ? q : 1 - q); }, 0));
+  const mx = Math.max(...ll), w = ll.map(x => Math.exp(x - mx)), Z = w.reduce((a, b) => a + b, 0);
+  return SIG_GRID.reduce((a, sg, i) => a + sg * w[i] / Z, 0);
+}
 function newStairs(run) {
   const st = {};
-  CONDS.forEach((c, i) => { if (c.run === run) { st[i + 'u'] = { c: i, rule: '1u2d', off: 0.5, k: 0 }; st[i + 'd'] = { c: i, rule: '2u1d', off: -0.5, k: 0 }; } });
+  CONDS.forEach((c, i) => { if (c.run === run) { const h = { tr: [] }; st[i + 'u'] = { c: i, h, off: 0.5 }; st[i + 'd'] = { c: i, h, off: -0.5 }; } });
   return st;
 }
-function stairUpdate(s, rf) {
-  if (s.rule === '1u2d') { if (rf) { if (++s.k >= 2) { s.off -= STEP; s.k = 0; } } else { s.off += STEP; s.k = 0; } }
-  else { if (!rf) { if (++s.k >= 2) { s.off += STEP; s.k = 0; } } else { s.off -= STEP; s.k = 0; } }
-  s.off = Math.max(-OFF_LIM, Math.min(s.hi ?? OFF_LIM, Math.round(s.off * 1000) / 1000));
+function placeOff(s) {
+  const o = (Math.random() < 0.5 ? -1 : 1) * (1.2 + 0.8 * Math.random()) * Math.SQRT2 * sigmaHat(s.h.tr);
+  s.off = Math.max(-OFF_LIM, Math.min(s.hi ?? OFF_LIM, Math.round(o / 0.05) * 0.05));
+  return s.off;
 }
+function stairUpdate(s, rf) { s.h.tr.push({ off: s.off, rf: rf ? 1 : 0 }); }
 function runQueue(stairs, nPer) { const q = []; for (const k of Object.keys(stairs)) for (let i = 0; i < nPer; i++) q.push(k); return shuffle(q); }
 
 /* ---------------- analysis ---------------- */
@@ -452,7 +464,8 @@ function analyze(trials, opts = {}) {
   if (predT.length) {
     for (const m of MODELS) res.pred[m.key] = nllOf(predT, t => pRef(CONDS[t.c], t.off, fit, m.key));
     res.chance = predT.length * Math.LN2;
-    const groups = {}; for (const t of predT) { const k = t.c + '|' + t.off.toFixed(3); (groups[k] = groups[k] || [0, 0])[0]++; if (t.rf) groups[k][1]++; }
+    // 'data' bound: empirical proportions in reference-speed bins of 0.15 log units (placement is continuous)
+    const groups = {}; for (const t of predT) { const k = t.c + '|' + Math.round(t.off / 0.15); (groups[k] = groups[k] || [0, 0])[0]++; if (t.rf) groups[k][1]++; }
     res.data = Object.values(groups).reduce((s, [n, k]) => s - (k ? k * Math.log(k / n) : 0) - (n - k ? (n - k) * Math.log((n - k) / n) : 0), 0);
     res.cgPred = CONDS.reduce((s, c, i) => s + (c.run === 2 && res.cg[i] ? res.cg[i].nll : 0), 0);
     res.best = MODELS.reduce((b, m) => res.pred[m.key] < res.pred[b] ? m.key : b, 'opt');
@@ -554,7 +567,7 @@ async function startSession() {
   $('#e-status').textContent = 'Measuring the display refresh rate…';
   E.hz = await measureRefresh();
   const set0 = expSettings();
-  if (vAlias('AB', set0, E.hz) < V_TEST * 1.6) { $('#e-status').textContent = `This display refreshes at ${Math.round(E.hz)} Hz, too slowly for ${Math.max(set0.sfA, set0.sfB)} c/° gratings at 3°/s. Choose lower spatial frequencies.`; return; }
+  if (vAlias('AB', set0, E.hz) < V_TEST * 1.6) { $('#e-status').textContent = `This display refreshes at ${Math.round(E.hz)} Hz, too slowly for ${Math.max(set0.sfA, set0.sfB)} c/° gratings at ${V_TEST}°/s. Choose lower spatial frequencies.`; return; }
   E.set = expSettings(); E.trials = []; E.run = -1; E.phase = 'practice'; E.practice = 0;
   E.session = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), started: new Date().toISOString() };
   lockSetup(true); setRunsChip(); $('#e-download').disabled = true;
@@ -564,7 +577,7 @@ async function startSession() {
 function abortSession() { cancelAnimationFrame(E.raf); clearTimeout(E.timer); E.phase = 'idle'; E.run = -1; lockSetup(false); setButtons(false); setRunsChip(); drawFrame({ fix: true }); $('#e-prompt').textContent = 'Session aborted. Nothing was saved.'; $('#e-status').textContent = 'Ready'; }
 function beginRun(r) {
   E.run = r; E.phase = 'run'; E.stairs = newStairs(r);
-  for (const st of Object.values(E.stairs)) { st.hi = Math.min(OFF_LIM, toLog(vAlias(CONDS[st.c].ref, E.set, E.hz)) - ST); st.off = Math.min(st.off, st.hi); }
+  for (const st of Object.values(E.stairs)) st.hi = Math.min(OFF_LIM, toLog(vAlias(CONDS[st.c].ref, E.set, E.hz)) - ST);
   E.queue = runQueue(E.stairs, E.set.nPer); E.runLen = E.queue.length; setRunsChip();
   nextTrial();
 }
@@ -585,7 +598,7 @@ function nextTrial() {
       if (E.run < 2) { const r = E.run; showBreak(`Run ${r + 1} of 3 complete. Take a short break.`, () => beginRun(r + 1)); return; }
       return finishSession();
     }
-    key = E.queue.pop(); condIdx = E.stairs[key].c; off = E.stairs[key].off;
+    key = E.queue.pop(); condIdx = E.stairs[key].c; off = placeOff(E.stairs[key]);
   }
   const c = CONDS[condIdx], rng = mulberry((Math.random() * 1e9) | 0);
   const testLeft = Math.random() < 0.5, ind = Math.random() < 0.5 ? -1 : 1, dir = Math.random() < 0.5 ? -1 : 1;
@@ -637,7 +650,7 @@ function buildPayload(res) {
     version: 1, session_id: E.session.id, participant: $('#e-part').value.trim().slice(0, 24),
     started: E.session.started, finished: E.session.finished, user_agent: navigator.userAgent,
     screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1, hz: +(E.hz || 0).toFixed(1) }, px_per_deg: +Stage.ppd.toFixed(2),
-    settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, step: STEP },
+    settings: { ...E.set, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, placement: 'slope-optimal, k 1.2-2.0' },
     conditions: CONDS.map(c => c.id),
     fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best, boot_wins: res.boot ? res.boot.wins : null } : null,
     trials: E.trials.map(t => [t.c, t.off, t.rf, t.ind, t.ts, t.dir, t.rt]),
@@ -685,7 +698,7 @@ function simSession(T) {
   for (let run = 0; run < 3; run++) {
     const stairs = newStairs(run), q = runQueue(stairs, T.nPer);
     while (q.length) {
-      const k = q.pop(), s = stairs[k], c = CONDS[s.c];
+      const k = q.pop(), s = stairs[k], c = CONDS[s.c]; placeOff(s);
       const Mt = moments(c.test, T, T.rule), Mr = moments(c.ref, T, T.rule);
       let rf = (s.off + Mr.m + Math.sqrt(Mr.v) * randn()) > (Mt.m + Math.sqrt(Mt.v) * randn());
       if (Math.random() < LAPSE) rf = Math.random() < 0.5;
@@ -830,11 +843,11 @@ function drawPsy(cv, tr, c, f) {
   const X = o => L + (o + OFF_LIM + 0.05) / (2 * OFF_LIM + 0.1) * pw, Y = p => T + (1 - p) * ph;
   ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
   for (const p of [0, .5, 1]) { ctx.beginPath(); ctx.moveTo(L, Y(p)); ctx.lineTo(L + pw, Y(p)); ctx.stroke(); txt(ctx, p.toFixed(1), L - 5, Y(p), 'right', 'middle', TK.ink3, 10); }
-  for (const v of [1, 2, 3, 5, 8]) { const o = toLog(v) - ST; if (Math.abs(o) <= OFF_LIM) txt(ctx, String(v), X(o), T + ph + 4, 'center', 'top', TK.ink3, 10); }
+  for (const v of [0.5, 1, 2, 3, 5]) { const o = toLog(v) - ST; if (Math.abs(o) <= OFF_LIM) txt(ctx, String(v), X(o), T + ph + 4, 'center', 'top', TK.ink3, 10); }
   txt(ctx, 'reference speed (°/s)', L + pw / 2, h - 1, 'center', 'bottom', TK.ink2, 10);
   const curve = (model, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 80; k++) { const o = -OFF_LIM + 2 * OFF_LIM * k / 80, y = Y(pRef(c, o, f, model)); k ? ctx.lineTo(X(o), y) : ctx.moveTo(X(o), y); } ctx.stroke(); };
   if (c.run < 2) curve('opt', TK.ink3); else MODELS.forEach(m => curve(m.key, mcol(m.key)));
-  const grp = {}; for (const t of tr) { const k = t.off.toFixed(3); (grp[k] = grp[k] || [0, 0])[0]++; if (t.rf) grp[k][1]++; }
+  const grp = {}; for (const t of tr) { const k = (Math.round(t.off / 0.15) * 0.15).toFixed(3); (grp[k] = grp[k] || [0, 0])[0]++; if (t.rf) grp[k][1]++; }
   const pts = [];
   for (const [k, [n, s]] of Object.entries(grp)) { const x = X(+k), y = Y(s / n); marker(ctx, x, y, 2.5 + Math.min(4, Math.sqrt(n)), 'circle', TK.data); pts.push({ x, y, html: `reference ${toLin(ST + +k).toFixed(2)} °/s<br>${s}/${n} “reference faster”` }); }
   cv._hit = nearest(pts);
