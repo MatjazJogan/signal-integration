@@ -8,7 +8,7 @@
 const SHEET_NAME = 'sessions';
 const HEADER = [
   'received', 'session_id', 'participant', 'started', 'finished', 'n_trials', 'px_per_deg',
-  'sigma_A', 'sigma_B', 'sigma_R', 'prior_a', 'nll_opt', 'nll_max', 'nll_avg', 'nll_chance', 'nll_data', 'best_model',
+  'sigma_A', 'sigma_B', 'nll_opt', 'nll_max', 'nll_avg', 'nll_chance', 'nll_data', 'best_model',
   'settings_json', 'trials_json', 'user_agent'
 ];
 
@@ -23,7 +23,7 @@ function doPost(e) {
     const f = d.fit || {};
     sh.appendRow([
       new Date(), d.session_id, d.participant, d.started, d.finished, (d.trials || []).length, d.px_per_deg,
-      f.sigma_A, f.sigma_B, f.sigma_R, f.prior_a, f.nll_opt, f.nll_max, f.nll_avg, f.nll_chance, f.nll_data, f.best_model,
+      f.sigma_A, f.sigma_B, f.nll_opt, f.nll_max, f.nll_avg, f.nll_chance, f.nll_data, f.best_model,
       JSON.stringify({ settings: d.settings, screen: d.screen, conditions: d.conditions, trial_fields: d.trial_fields }),
       JSON.stringify(d.trials), d.user_agent
     ]);

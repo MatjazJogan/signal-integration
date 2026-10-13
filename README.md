@@ -17,13 +17,13 @@ A moving object excites many spatiotemporal frequency channels at once, yet we p
 
 Observers compare the speeds of two band-limited noise gratings (bandwidth 0.04 ω<sub>s</sub>, 4° raised-cosine aperture, 6° eccentricity, 600 ms). The test drifts at 3°/s, and the reference speed follows two interleaved staircases per condition. A white square then marks one grating and the observer reports whether it was faster or slower, which keeps response bias out of the measurement.
 
-| Run | Conditions (test / reference) | Role |
+| Run | Condition (test / reference) | Role |
 | --- | --- | --- |
-| 1 | A / R, R / R | fit |
-| 2 | B / R, R / R | fit |
-| 3 | A+B / R | predicted |
+| 1 | A / A | fit |
+| 2 | B / B | fit |
+| 3 | A+B / A+B | predicted |
 
-A and B are single-channel gratings, by default 0.5 and 2 c/° at 4% and 13% contrast, close to our original calibration and two octaves apart so that the channels respond independently; R, the reference, sums octave bands from 0.5 c/° up to the higher test frequency at the contrasts of the corresponding test channels, as our ABCD stimulus combined the single-channel spectra; test and reference differ in which channels they drive, not in contrast. The page measures the display refresh rate and caps reference speeds so that no grating aliases in time. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
+All conditions are balanced: test and reference share the same spectrum and differ only in speed. A and B are single-channel gratings, by default 0.5 and 2 c/° at 4% and 13% contrast, close to our original calibration and two octaves apart so that the channels respond independently. The page measures the display refresh rate and caps speeds so that no grating aliases in time. A bank-card match and the viewing distance calibrate the display in degrees of visual angle. Contrast is nominal, as the display is not gamma-corrected.
 
 ## Model
 
@@ -35,9 +35,9 @@ Speed is represented as s = log(1 + v/0.3). Each channel contributes a Gaussian 
 | Most reliable channel | s + aσ<sub>min</sub>² | σ<sub>min</sub>² |
 | Channel averaging | s + (a/k) Σ σ<sub>X</sub>² | Σ σ<sub>X</sub>² / k² |
 
-The models coincide for single channels, so σ<sub>A</sub>, σ<sub>B</sub>, σ<sub>R</sub> and a are fitted once, by maximum likelihood, to runs 1 and 2. The reference-against-reference condition fixes σ<sub>R</sub>, as our balanced ABCD condition did; each test-against-reference function then yields σ<sub>X</sub> from its slope, √(σ<sub>X</sub>² + σ<sub>R</sub>²), and a from its PSE, a(σ<sub>X</sub>² − σ<sub>R</sub>²). Run 3 is then predicted without free parameters, and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between chance and the empirical response proportions.
+In balanced conditions the prior shifts test and reference alike and cancels; the psychometric function has standard deviation √2·σ, so runs 1 and 2 fix σ<sub>A</sub> and σ<sub>B</sub> directly. Run 3 is then predicted without free parameters (optimal σ<sub>A</sub>σ<sub>B</sub>/√(σ<sub>A</sub>²+σ<sub>B</sub>²), most reliable σ<sub>min</sub>, averaging √(σ<sub>A</sub>²+σ<sub>B</sub>²)/2), and the models are compared by goodness of prediction: the negative log-likelihood of the run-3 responses, scaled between chance and the empirical response proportions. The analysis also reports how often the verdict survives bootstrap refits of runs 1 and 2.
 
-The prior exponent is critical for separating optimal integration from the most reliable channel. The latter predicts that the compound behaves like the better channel, which is measured directly, whereas the optimal prediction extrapolates through a(σ² − σ<sub>R</sub>²). The analysis reports how often the verdict survives bootstrap refits of runs 1 and 2. In simulations with the standard session (280 trials) and σ<sub>R</sub> ≈ 0.25, an observer relying on the most reliable channel is identified in about 90% of sessions, a truly optimal observer in about 55–65%; firm conclusions need sessions pooled across observers, as in the original study. The *Simulated observer* tab runs the full procedure on a model observer, including a 50-session recovery test.
+The demo therefore tests the precision side of the study. Perceived speed, and with it the prior and the speed increase that optimal integration predicts for compound stimuli, requires comparisons between different stimuli, which in the original study were made against the four-channel ABCD reference. With equally reliable channels, optimal integration and averaging predict the same threshold; in simulations of the standard session (270 trials) optimal integration and the most reliable channel are told apart in about 70–75% of sessions. The *Simulated observer* tab runs the full procedure on a model observer, including a 50-session recovery test.
 
 A correction to the paper: in Fig. 3b the SD of the balanced psychometric function should read √2·σ<sub>Test</sub>, not σ<sub>Test</sub>/√2, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis uses √2·σ<sub>Test</sub>.
 
