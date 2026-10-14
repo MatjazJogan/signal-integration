@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
-/* Layout: setup and stimulus stage on top, shared analysis underneath (fits, predictions, model comparison). */
 :root {
   --bg: #f3f5f8;
   --panel: #ffffff;
@@ -16,110 +15,63 @@
   --ink-2: #485462;
   --ink-3: #78838f;
   --rule: #dce2e9;
-  --opt: #2a78d6;      /* optimal integration  (categorical slot 1) */
-  --max: #eb6834;      /* most reliable channel (slot 2) */
-  --avg: #1baf7a;      /* channel averaging     (slot 3) */
-  --data: #0f1722;
+  --accent: #2a78d6;
   --font-ui: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --radius: 10px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895;
-    --rule: #28313b; --opt: #3987e5; --max: #d95926; --avg: #199e70; --data: #edf1f5;
+    --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895; --rule: #28313b; --accent: #3987e5;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895;
-  --rule: #28313b; --opt: #3987e5; --max: #d95926; --avg: #199e70; --data: #edf1f5;
+  --bg: #0f141a; --panel: #161d25; --ink: #edf1f5; --ink-2: #b2bcc8; --ink-3: #7d8895; --rule: #28313b; --accent: #3987e5;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-ui); }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+@media (max-width: 480px) { .wrap { padding-inline: 16px; } }
 header.top { padding-block: 36px 8px; display: grid; gap: 14px; }
 .eyebrow { font: 600 12px/1.4 var(--font-data); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 0; }
 h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 h2 { font-size: 19px; margin: 0 0 6px; }
-h3 { font-size: 16px; margin: 0 0 6px; }
+h3 { font-size: 17px; margin: 0; }
 p { margin: 0; }
 .lede { max-width: 72ch; color: var(--ink-2); font-size: 16px; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
-.tabs button { font: 700 14px var(--font-ui); background: none; border: 0; border-bottom: 3px solid transparent; color: var(--ink-3); padding: 10px 14px; cursor: pointer; margin-bottom: -1px; }
-.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
 main { padding-block: 20px 60px; display: grid; gap: 18px; }
-section.tab { display: grid; gap: 18px; }
 .card { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; min-width: 0; }
-.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 22px; align-items: end; }
-.ctl { display: grid; gap: 4px; min-width: 0; }
-.ctl label, .ctl .lbl { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
-.ctl output, .num { font: 600 13px var(--font-data); color: var(--ink); font-variant-numeric: tabular-nums; }
-.ctl label.check { justify-content: flex-start; align-items: center; font-weight: 600; }
-.ctl small { color: var(--ink-3); font-size: 12px; line-height: 1.35; }
-input[type=range] { width: 100%; accent-color: var(--ink); }
-input[type=text], input[type=number], select { font: 14px var(--font-ui); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); width: 100%; }
 .btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .b { font: 700 14px var(--font-ui); padding: 8px 16px; border-radius: 7px; border: 1px solid var(--ink); background: var(--ink); color: var(--panel); cursor: pointer; }
 .b.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
 .b:disabled { opacity: .45; cursor: default; }
-button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--opt); outline-offset: 2px; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .status { font: 13px var(--font-data); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .prose { max-width: 75ch; color: var(--ink-2); display: grid; gap: 10px; }
-p.prose { display: block; }
-.prose code { font: 13px var(--font-data); color: var(--ink); }
 .note { max-width: 75ch; color: var(--ink-2); }
 .note b { color: var(--ink); }
-th .nt { text-transform: none; }
-.eq { font: 13px/1.7 var(--font-data); color: var(--ink); background: var(--bg); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
-.card-cal { display: grid; gap: 10px; }
-.cardbox { height: 54px; border: 2px solid var(--ink); border-radius: 6px; background: repeating-linear-gradient(45deg, transparent 0 6px, var(--rule) 6px 7px); max-width: 100%; }
-.stagewrap { overflow-x: auto; background: rgb(128,128,128); border-radius: 8px; display: flex; justify-content: center; }
-#stage { display: block; image-rendering: pixelated; }
-.prompt { text-align: center; font-size: 17px; font-weight: 700; min-height: 1.6em; }
-.resp { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.resp button { min-width: 170px; font-size: 16px; padding: 12px 18px; }
-kbd { font: 12px var(--font-data); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--ink); background: var(--bg); }
-.runs { display: flex; gap: 8px; flex-wrap: wrap; }
-.runs span { font: 12px var(--font-data); border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; color: var(--ink-3); }
-.runs span.on { border-color: var(--ink); color: var(--ink); }
-.runs span.done { background: var(--ink); color: var(--panel); border-color: var(--ink); }
-canvas.chart { display: block; width: 100%; }
 figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
-figcaption { font-size: 13px; color: var(--ink-2); font-weight: 700; }
-.psy7 { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-.psy7 canvas { aspect-ratio: 4 / 3; }
-.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-@media (max-width: 900px) { .grid3 { grid-template-columns: 1fr; } }
-.grid3 canvas { aspect-ratio: 4 / 3; }
-.grid2r { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-@media (max-width: 760px) { .grid2r { grid-template-columns: 1fr; } }
-.grid2r canvas { aspect-ratio: 16 / 9; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); align-items: center; }
-.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
-.tablewrap { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 14px; }
-th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
-th { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
-td.n { font: 14px var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-.verdict { font-size: 15px; color: var(--ink-2); max-width: 80ch; }
-.verdict b { color: var(--ink); }
-.empty { color: var(--ink-3); font-size: 14px; padding: 18px 0; }
-details summary { cursor: pointer; font-weight: 700; color: var(--ink-2); font-size: 14px; }
-#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--panel); font: 12px/1.45 var(--font-data); padding: 6px 9px; border-radius: 6px; max-width: 280px; opacity: 0; transition: opacity .08s; }
-@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+.fig { display: grid; gap: 10px; }
+.fig img { width: 100%; height: auto; border-radius: 6px; background: #fff; }
+.fig figcaption { font-weight: 400; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
+.section-h { font-size: 24px; margin: 18px 0 0; }
+.demos { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 860px) { .demos { grid-template-columns: 1fr; } }
+.demo { display: grid; gap: 12px; align-content: start; }
+.stagewrap { background: rgb(128,128,128); border-radius: 8px; display: flex; justify-content: center; padding: 12px 0; }
+.stagewrap canvas { display: block; max-width: 100%; }
+.resp { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.resp .b { flex: 1 1 120px; max-width: 180px; }
+.reveal { color: var(--ink-2); border-left: 3px solid var(--accent); padding-left: 12px; }
+.reveal b { color: var(--ink); }
 footer { color: var(--ink-3); font-size: 13px; padding-block: 0 40px; }
 footer a, .note a, .prose a { color: var(--ink-2); }
 .byline { color: var(--ink-2); font-size: 15px; }
 .links { display: flex; gap: 8px; flex-wrap: wrap; }
 a.b { text-decoration: none; display: inline-block; }
-.fig { display: grid; gap: 10px; }
-.fig img { width: 100%; height: auto; border-radius: 6px; background: #fff; }
-.fig figcaption { font-weight: 400; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
-.section-h { font-size: 24px; margin: 18px 0 0; }
 pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 0; }
 </style>
 </head>
@@ -132,7 +84,7 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
   <p class="lede">A moving object excites many spatiotemporal frequency channels at once, yet we perceive a single speed. We asked how the visual system combines these signals. Measuring speed discrimination for stimuli that each targeted one channel, we fitted a Bayesian observer with a prior for slow speeds and used it to predict perception of stimuli that drive several channels together. Only an observer that integrates the channels optimally, and applies the prior after integration, accounted for the data.</p>
   <div class="links">
     <a class="b" href="https://doi.org/10.1523/JNEUROSCI.4801-14.2015">Read the paper</a>
-    <a class="b ghost" href="#demo">Try the experiment</a>
+    <a class="b ghost" href="#demo">See the illusions</a>
     <a class="b ghost" href="#cite">Cite</a>
   </div>
 </header>
@@ -151,179 +103,46 @@ pre.bib { font: 12.5px/1.55 var(--font-data); background: var(--bg); color: var(
   <p>The comparison also places the prior: it enters only after the channel signals have been combined. Because speed-tuned neurons are first common in area MT, this suggests that prior expectations act downstream of the stage at which spatiotemporal channels are integrated.</p>
 </section>
 
-<h2 class="section-h" id="demo">Try it yourself</h2>
-<p class="note">The experiment below tests the precision side of the study with two channels. Speed discrimination for each single-channel grating fixes the noise of its channel; each integration rule then predicts, without free parameters, how well you discriminate the compound grating. The simulated observer shows how reliably a single session separates the rules.</p>
-<nav class="tabs" role="tablist">
-  <button id="tabbtn-exp" role="tab" aria-selected="true" aria-controls="tab-exp">Run the experiment</button>
-  <button id="tabbtn-sim" role="tab" aria-selected="false" aria-controls="tab-sim">Simulated observer</button>
-</nav>
+<h2 class="section-h" id="demo">See it yourself</h2>
+<p class="note">Perceived speed is not veridical. In each demonstration a single grating drifts at a constant speed for about four seconds; halfway through, something other than its speed changes. Keep your eyes on the central dot and report what you saw. The effects are strongest in a dim room.</p>
 
-<!-- ======================= EXPERIMENT ======================= -->
-<section class="tab" id="tab-exp" role="tabpanel" aria-labelledby="tabbtn-exp">
-  <div class="card" style="display:grid;gap:14px">
-    <h2>Before you start</h2>
-    <p class="note">Sit about 57 cm from the screen in a dim room and keep your eyes on the central dot. Two drifting gratings appear briefly, one on each side; a white square then marks one of them. Report whether <b>the marked grating</b> moved <b>faster</b> or <b>slower</b> than the other. A short calibration first adjusts the contrast of each grating to your sensitivity; three blocks of about four minutes follow, separated by breaks, each mixing all gratings.</p>
-    <div class="controls">
-      <div class="ctl">
-        <label for="e-part"><span>Participant code</span></label>
-        <input id="e-part" type="text" maxlength="24" placeholder="e.g. P07 (no names)">
-        <small>Saved with your data. Use a code, not your name.</small>
-      </div>
-      <div class="ctl">
-        <span class="lbl">Session length</span>
-        <select id="e-len">
-          <option value="25">Short: 150 trials (about 7 min)</option>
-          <option value="45" selected>Standard: 270 trials (about 12 min)</option>
-          <option value="70">Long: 420 trials (about 19 min)</option>
-        </select>
-        <small>Calibration adds 140 trials (about 6 min).</small>
-      </div>
-      <div class="ctl">
-        <label for="e-dist"><span>Viewing distance</span> <output id="eo-dist"></output></label>
-        <input id="e-dist" type="range" min="35" max="90" step="1" value="57">
-      </div>
-    </div>
-    <div class="card-cal">
-      <div class="ctl">
-        <label for="e-card"><span>Screen calibration: drag until the box matches the long edge of a bank card (85.6 mm)</span> <output id="eo-ppd"></output></label>
-        <input id="e-card" type="range" min="150" max="900" step="1" value="323">
-      </div>
-      <div class="cardbox" id="cardbox"></div>
-    </div>
-    <details>
-      <summary>Stimulus settings</summary>
-      <div class="controls" style="margin-top:12px">
-        <div class="ctl">
-          <label class="check"><input id="e-calib" type="checkbox" checked> <span>Calibrate contrasts first (recommended for a first session)</span></label>
-          <small>Sets each grating to a common noise level, σ ≈ 0.42, as in the original study. Unticked, a later session continues from the contrasts refined by earlier sessions in this browser.</small>
-        </div>
-        <div class="ctl">
-          <span class="lbl">Channel A spatial frequency</span>
-          <select id="e-sfA"><option value="0.5" selected>0.5 c/°</option><option value="1">1 c/°</option></select>
-        </div>
-        <div class="ctl">
-          <span class="lbl">Channel B spatial frequency</span>
-          <select id="e-sfB"><option value="2" selected>2 c/°</option><option value="4">4 c/°</option></select>
-        </div>
-        <div class="ctl">
-          <label for="e-cA"><span>Channel A contrast (starting value if calibrated)</span> <output id="eo-cA"></output></label>
-          <input id="e-cA" type="range" min="0.3" max="60" step="0.1" value="4">
-        </div>
-        <div class="ctl">
-          <label for="e-cB"><span>Channel B contrast (starting value if calibrated)</span> <output id="eo-cB"></output></label>
-          <input id="e-cB" type="range" min="0.3" max="60" step="0.1" value="13">
-        </div>
-      </div>
-      <p class="prose" style="margin-top:10px;font-size:14px">Gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>) drifting in a 4° raised-cosine aperture at 6° eccentricity, shown for 600 ms. The test drifts at 2°/s (3°/s in the original study) and reference speeds range from about 0.6 to 5.4°/s. Gratings drive channel A, channel B or both; in every trial the two gratings have the same spectrum and differ only in speed; by default 0.5 c/° and 2 c/°. A calibration first sets the contrast of each so that its noise reaches σ ≈ 0.42, the level our observers were calibrated to (on average 3.0% and 12.7%); without it, the contrasts set here are used. Low contrasts are rendered with random dithering, so that steps finer than one grey level survive the 8-bit display. The two channels are two octaves apart so that they respond independently; channels one octave apart overlap, their noise is correlated, and optimal integration then overestimates the benefit of combining them. Higher frequencies need much more contrast at this eccentricity (4 c/° needed 45%), and on a 60 Hz display speeds are capped to avoid temporal aliasing. Contrast is nominal, as the display is not gamma-corrected.</p>
-    </details>
-    <div class="btns">
-      <button class="b" id="e-start">Start session</button>
-      <button class="b ghost" id="e-stop" disabled>Abort</button>
-      <span class="status" id="e-status">Ready</span>
-    </div>
-    <div class="runs" id="e-runs"><span>Practice</span><span>Calibration</span><span>Block 1</span><span>Block 2</span><span>Block 3</span></div>
-  </div>
-
-  <div class="card" style="display:grid;gap:12px">
-    <div class="stagewrap"><canvas id="stage" aria-label="Stimulus display"></canvas></div>
-    <p class="prompt" id="e-prompt">The stimulus appears here.</p>
+<div class="demos">
+  <section class="card demo" id="d-contrast" aria-labelledby="h-contrast">
+    <h3 id="h-contrast">1 · Contrast</h3>
+    <p class="note">A grating drifts at high contrast; halfway through, its contrast drops.</p>
+    <div class="stagewrap"><canvas aria-label="Drifting grating whose contrast changes"></canvas></div>
+    <div class="btns"><button class="b" data-play>Play</button><button class="b ghost" data-play-rev>Play reversed</button></div>
+    <p class="prompt note" data-prompt>Did the grating speed up or slow down?</p>
     <div class="resp">
-      <button class="b ghost" id="e-faster" disabled>↑ Marked was faster</button>
-      <button class="b ghost" id="e-slower" disabled>↓ Marked was slower</button>
+      <button class="b ghost" data-ans="faster" disabled>Sped up</button>
+      <button class="b ghost" data-ans="slower" disabled>Slowed down</button>
+      <button class="b ghost" data-ans="same" disabled>No change</button>
     </div>
-  </div>
+    <p class="reveal" data-reveal hidden></p>
+  </section>
 
-  <div class="card" style="display:grid;gap:10px">
-    <h3>Your data</h3>
-    <p class="prose" id="e-save">Finished sessions are saved automatically and can also be downloaded.</p>
-    <div class="btns">
-      <button class="b ghost" id="e-download" disabled>Download session (JSON)</button>
-      <label class="b ghost" for="e-load" style="display:inline-block">Analyse a saved session…</label>
-      <input id="e-load" type="file" accept="application/json,.json" hidden>
+  <section class="card demo" id="d-channels" aria-labelledby="h-channels">
+    <h3 id="h-channels">2 · A second spatial frequency</h3>
+    <p class="note">A coarse grating drifts alone; halfway through, a finer grating is added to it.</p>
+    <div class="stagewrap"><canvas aria-label="Drifting grating to which a second spatial frequency is added"></canvas></div>
+    <div class="btns"><button class="b" data-play>Play</button><button class="b ghost" data-play-rev>Play reversed</button></div>
+    <p class="prompt note" data-prompt>Did the grating speed up or slow down?</p>
+    <div class="resp">
+      <button class="b ghost" data-ans="faster" disabled>Sped up</button>
+      <button class="b ghost" data-ans="slower" disabled>Slowed down</button>
+      <button class="b ghost" data-ans="same" disabled>No change</button>
     </div>
-    <div id="e-next" hidden style="display:grid;gap:8px">
-      <p class="prose" id="e-next-text"></p>
-      <div class="btns"><button class="b ghost" id="e-next-use">Use these contrasts next time</button><span class="status" id="e-next-status"></span></div>
-    </div>
-  </div>
-</section>
+    <p class="reveal" data-reveal hidden></p>
+  </section>
+</div>
 
-<!-- ======================= SIMULATION ======================= -->
-<section class="tab" id="tab-sim" role="tabpanel" aria-labelledby="tabbtn-sim" hidden>
-  <div class="card controls">
-    <div class="ctl">
-      <label for="s-sA"><span>Channel A likelihood width σ<sub>A</sub></span> <output id="so-sA"></output></label>
-      <input id="s-sA" type="range" min="0.15" max="0.9" step="0.01" value="0.45">
-    </div>
-    <div class="ctl">
-      <label for="s-sB"><span>Channel B likelihood width σ<sub>B</sub></span> <output id="so-sB"></output></label>
-      <input id="s-sB" type="range" min="0.15" max="0.9" step="0.01" value="0.45">
-    </div>
-    <div class="ctl">
-      <span class="lbl">True integration rule</span>
-      <select id="s-rule">
-        <option value="opt">Optimal integration</option>
-        <option value="max">Most reliable channel</option>
-        <option value="avg">Channel averaging</option>
-      </select>
-    </div>
-    <div class="ctl">
-      <span class="lbl">Session length</span>
-      <select id="s-n"><option value="25">25 (150 trials)</option><option value="45" selected>45 (270 trials)</option><option value="70">70 (420 trials)</option><option value="200">200 (1200 trials)</option></select>
-    </div>
-    <div class="ctl">
-      <div class="btns">
-        <button class="b" id="s-run">Simulate a session</button>
-        <button class="b ghost" id="s-rep">Repeat 50 sessions</button>
-      </div>
-      <span class="status" id="s-status"></span>
-    </div>
-  </div>
-  <div class="card" id="s-repcard" hidden>
-    <h3>Which model predicts best, across 50 simulated sessions</h3>
-    <div class="tablewrap"><table id="s-reptable"></table></div>
-  </div>
-</section>
-
-<!-- ======================= MODEL ======================= -->
-
-<!-- ======================= RESULTS (shared) ======================= -->
-<section class="card" id="results" style="display:grid;gap:16px">
-  <div>
-    <h2 id="r-title">Results</h2>
-    <p class="verdict" id="r-verdict">Run a session or simulate one to see the analysis.</p>
-  </div>
-  <div id="r-body" hidden style="display:grid;gap:16px">
-    <div class="grid2r">
-      <figure><figcaption>Goodness of prediction for A + B</figcaption><canvas class="chart" id="c-gop" aria-label="Goodness of prediction per model"></canvas></figure>
-      <figure><figcaption>Stimulus noise σ (log units)</figcaption><canvas class="chart" id="c-thr" aria-label="Thresholds"></canvas></figure>
-    </div>
-    <div class="legend">
-      <span><i style="background:var(--data);height:8px;width:8px;border-radius:50%"></i>Data (cumulative Gaussian per condition)</span>
-      <span><i style="background:var(--ink-3)"></i>Fit (all models, single channels)</span>
-      <span><i style="background:var(--opt)"></i>Optimal integration</span>
-      <span><i style="background:var(--max)"></i>Most reliable channel</span>
-      <span><i style="background:var(--avg)"></i>Channel averaging</span>
-    </div>
-    <div>
-      <h3>Psychometric functions</h3>
-      <div class="psy7" id="c-psy"></div>
-    </div>
-    <div class="tablewrap"><table id="r-table"></table></div>
-  </div>
-</section>
-
-<section class="card prose" id="method">
-    <h2>How the demo works</h2>
-    <p>We represent speed in the normalised logarithmic space s = log(1 + v/s<sub>0</sub>), with s<sub>0</sub> = 0.3°/s. Each channel X provides a measurement with a Gaussian likelihood of width σ<sub>X</sub>, and the prior is locally a power law, log p(s) = as + b. The three observers differ only in how they combine the channels:</p>
-    <div class="eq">Optimal integration   E[ŝ] = s + a·σ²         Var[ŝ] = σ²,   1/σ² = 1/σ_A² + 1/σ_B²
-Most reliable channel E[ŝ] = s + a·σ_min²     Var[ŝ] = σ_min²
-Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div>
-    <p>Every condition is balanced, as in the corresponding conditions of the original study: test and reference have the same spectrum and differ only in speed. The prior then shifts both percepts alike and cancels, and the probability that the reference is seen as faster is Φ(Δs / (√2·σ)), so the slope of each psychometric function gives the noise of the stimulus directly. The single-channel conditions (A against A, B against B) fix σ<sub>A</sub> and σ<sub>B</sub>; the compound condition (A + B against A + B) is then predicted without further fitting. All three conditions are interleaved in each of three blocks, so that no block adapts the observer to one grating. Optimal integration predicts σ<sub>A</sub>σ<sub>B</sub> / √(σ<sub>A</sub>² + σ<sub>B</sub>²), the most reliable channel σ<sub>min</sub>, and averaging √(σ<sub>A</sub>² + σ<sub>B</sub>²) / 2.</p>
-    <p>We compare the models by goodness of prediction: the negative log-likelihood of the compound-condition responses, scaled between a coin flip (chance) and the empirical response proportions (data). The test always drifts at 2°/s (3°/s in the original study) and reference speeds stay between about 0.6 and 5.4°/s. Because the PSE of a balanced condition is zero by symmetry, only the slope has to be measured, and it is measured best well away from the PSE. Each condition therefore runs two weighted up/down staircases converging on 85% and 15% “reference faster”; in simulations this identifies a truly optimal observer, against the most reliable channel, more often than staircases converging on 75% and 25% (about 73% against 61% of sessions). Before the main blocks, as in the original study, a calibration sets the contrast of each single-channel grating so that its noise is σ = 0.6/√2 ≈ 0.42. It models the noise as σ(c) = 0.42·(c*/c)<sup>β</sup> and uses a Bayesian adaptive procedure (the psi method) that chooses, for each trial, the contrast and reference speed that are most informative about the target contrast c*; references well away from the test, where the observer is mostly right, carry the most information about the noise. With 70 trials per grating this leaves each channel within about ±20% of the target, so the two channels can still differ. The single-channel trials of the main blocks are evidence about the same model, so after each session they refine the estimate, which is kept in the browser; the next session can start from the refined contrasts without recalibrating. In simulations the two channels end up within a factor of 1.25 of each other for 60% of observers after calibration, 75% after one session and 87% after two. Calibration matters for two reasons: equally reliable channels separate the models best, and well above threshold, speed discrimination saturates and the channels may suppress each other, so that their noise is no longer independent. Asking about a randomly marked grating, rather than which grating was faster, keeps response bias out of the measurement. The analysis reports how often the verdict survives bootstrap refits of the single-channel conditions.</p>
-    <p>Balanced conditions measure precision only. Perceived speed, and with it the prior and the increase in speed that optimal integration predicts for compound stimuli, requires comparisons between different stimuli, which in the original study were made against the four-channel ABCD reference. Two further consequences follow from the predictions above. When the channels are equally reliable, optimal integration and averaging predict the same threshold, σ/√2, and only the most reliable channel (σ) is distinguished; channels of unequal reliability separate averaging from optimal integration but bring both closer to the most reliable channel. Optimal integration also assumes independent channel noise, which is why the default test frequencies are two octaves apart.</p>
-    <p>In simulations with the standard session (270 trials) and two equally reliable channels (σ ≈ 0.45, typical of our original observers), a truly optimal observer beats the most-reliable prediction in about 75% of sessions and an observer relying on the most reliable channel is identified in about 85%; averaging cannot be told from optimal integration, because the predictions coincide. With channels of unequal reliability the separation is smaller still. Pooling sessions across observers sharpens the comparison.</p>
-    <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply. The analysis here uses √2·σ<sub>Test</sub>.</p>
+<section class="card prose" id="why">
+  <h2>Why the speed seems to change</h2>
+  <p>Both effects follow from the observer we fitted. Each spatiotemporal frequency channel provides a noisy measurement of speed, which is combined with a prior expectation that slow speeds are more common than fast ones. The less reliable the measurement, the more the estimate is drawn towards slow speeds.</p>
+  <p>Lowering contrast makes the measurement less reliable, so a grating appears to slow down, as has long been known (Thompson 1982; Stone &amp; Thompson 1992). Adding a second spatial frequency drives a second channel. If the channels are integrated optimally, the combined measurement is more reliable than either alone, the prior pulls less and the grating appears to speed up, which is what our observers reported. Averaging the estimates of the two channels would instead make the compound grating appear slower than the coarse one alone.</p>
+  <p>Adding a grating also adds contrast. In our experiments the dependence of perceived speed on both contrast and spatial frequency reduced to their joint effect on the uncertainty of the combined signal.</p>
+  <p>The gratings are band-limited noise (bandwidth 0.04 ω<sub>s</sub>, as in the study), drifting at a nominal 2°/s in a 5° window: 1 c/° in the first demonstration, 0.5 c/° alone or with 2 c/° in the second. <i>Play reversed</i> runs each change the other way round, which reverses the illusion. Contrast is nominal, as the display is not calibrated.</p>
+  <p>A correction to the paper: in Fig. 3b the standard deviation of the balanced psychometric function is labelled σ<sub>Test</sub>/√2; it should read √2·σ<sub>Test</sub>, as the Methods (σ = 0.6/√2) and Fig. 3c imply.</p>
 </section>
 
 <section class="card" id="cite" style="display:grid;gap:10px">
@@ -345,227 +164,25 @@ Channel averaging     E[ŝ] = s + (a/k)·Σσ_X²  Var[ŝ] = Σσ_X² / k²</div
 </main>
 
 <footer class="wrap">
-  <p>Matjaž Jogan · Computational Perception and Cognition Laboratory, University of Pennsylvania. Finished sessions are saved with the participant code you enter, your browser and screen settings, and your responses; please do not use your name. <a href="https://github.com/MatjazJogan/signal-integration">Source on GitHub</a>.</p>
+  <p>Matjaž Jogan · Computational Perception and Cognition Laboratory, University of Pennsylvania. <a href="https://github.com/MatjazJogan/signal-integration">Source on GitHub</a>.</p>
 </footer>
-
-<div id="tip" role="status" aria-live="polite"></div>
 
 <script>
 'use strict';
-/* ======================= configuration =======================
-   Paste the Google Apps Script web-app URL here to collect finished sessions in a Google Sheet
-   (see README, "Collecting data"). Leave empty to disable uploading. */
-const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx2EOkoPCRGvhTBzb09QTWJGzh2JR0i_vfHedtNzzki2NI6Y4QF7xMiSwCNcF2aMTkd/exec';
-
 const $ = s => document.querySelector(s);
-const S0 = 0.3, V_TEST = 2;   // test speed (deg/s); the original study used 3 deg/s
-const toLog = v => Math.log(1 + v / S0), toLin = s => S0 * (Math.exp(s) - 1);
-const ST = toLog(V_TEST);
-const LAPSE = 0.01, OFF_LIM = 0.9, BLOCKS = 3;   // reference speeds span ST ± 0.9 log units, about 0.6–5.4 deg/s
-const MODELS = [
-  { key: 'opt', name: 'Optimal integration', cls: '--opt', shape: 'circle' },
-  { key: 'max', name: 'Most reliable channel', cls: '--max', shape: 'square' },
-  { key: 'avg', name: 'Channel averaging', cls: '--avg', shape: 'diamond' }
-];
-// test/reference stimulus pairs, interleaved in every block; the compound condition (pred) is predicted from the others
-// balanced conditions, as in the paper: test and reference have the same spectrum, so the slope of each psychometric
-// function gives the stimulus noise directly (SD = sqrt2 * sigma) and the prior cancels
-const CONDS = [
-  { id: 'A/A', test: 'A', ref: 'A' },
-  { id: 'B/B', test: 'B', ref: 'B' },
-  { id: 'AB/AB', test: 'AB', ref: 'AB', pred: true }
-];
-const label = x => x === 'AB' ? 'A+B' : x;
-const condName = c => `${label(c.test)} vs ${label(c.ref)}`;
+const SPEED = 2, PATCH_DEG = 5;                     // deg/s, window diameter in deg
+const T = { fade: 200, first: 1800, xfade: 160, second: 1800 };
+const T_END = 2 * T.fade + T.first + T.xfade + T.second;
+// each demo: components (spatial frequency, c/deg) and their contrasts before and after the change; 'Play reversed'
+// swaps the two. pred: the change in perceived speed expected for the forward order
+const DEMOS = {
+  contrast: { sf: [1], fwd: [[0.4], [0.04]], pred: 'slower',
+    what: fw => `the contrast went from <b>${fw ? '40% to 4%' : '4% to 40%'}</b>` },
+  channels: { sf: [0.5, 2], fwd: [[0.06, 0], [0.06, 0.1]], pred: 'faster',
+    what: fw => fw ? 'a finer grating (2 c/°) was <b>added</b> to the coarse one (0.5 c/°)' : 'the finer grating (2 c/°) was <b>taken away</b>, leaving the coarse one (0.5 c/°)' }
+};
 
-/* ---------------- math ---------------- */
-function erfc(x) {
-  const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
-  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 +
-    t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
-  return x >= 0 ? r : 2 - r;
-}
-const Phi = x => 0.5 * erfc(-x / Math.SQRT2);
-function randn() { let u = 0; while (!u) u = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * Math.random()); }
-function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function mulberry(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function nelderMead(f, x0, step = 0.3, iters = 500) {
-  const n = x0.length; let P = [x0.slice()];
-  for (let i = 0; i < n; i++) { const p = x0.slice(); p[i] += step; P.push(p); }
-  let F = P.map(f);
-  for (let it = 0; it < iters; it++) {
-    const idx = F.map((v, i) => i).sort((a, b) => F[a] - F[b]); P = idx.map(i => P[i]); F = idx.map(i => F[i]);
-    if (Math.abs(F[n] - F[0]) < 1e-7) break;
-    const c = Array(n).fill(0); for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) c[j] += P[i][j] / n;
-    const pt = (t) => c.map((v, j) => v + t * (P[n][j] - v));
-    const xr = pt(-1), fr = f(xr);
-    if (fr < F[0]) { const xe = pt(-2), fe = f(xe); if (fe < fr) { P[n] = xe; F[n] = fe; } else { P[n] = xr; F[n] = fr; } }
-    else if (fr < F[n - 1]) { P[n] = xr; F[n] = fr; }
-    else {
-      const xc = fr < F[n] ? pt(-0.5) : pt(0.5), fc = f(xc);
-      if (fc < Math.min(fr, F[n])) { P[n] = xc; F[n] = fc; }
-      else for (let i = 1; i <= n; i++) { P[i] = P[i].map((v, j) => P[0][j] + 0.5 * (v - P[0][j])); F[i] = f(P[i]); }
-    }
-  }
-  let b = 0; for (let i = 1; i <= n; i++) if (F[i] < F[b]) b = i;
-  return { x: P[b], f: F[b] };
-}
-
-/* ---------------- observer model (Jogan & Stocker 2015, Eqs. 7–15) ---------------- */
-// percept moments relative to the true log speed: mean shift a·σ², variance σ²
-function moments(stim, th, model) {
-  const vA = th.sA * th.sA, vB = th.sB * th.sB;
-  if (stim === 'A') return { m: th.a * vA, v: vA };
-  if (stim === 'B') return { m: th.a * vB, v: vB };
-  if (model === 'opt') { const v = 1 / (1 / vA + 1 / vB); return { m: th.a * v, v }; }
-  if (model === 'max') { const v = Math.min(vA, vB); return { m: th.a * v, v }; }
-  return { m: th.a * (vA + vB) / 2, v: (vA + vB) / 4 };   // averaging over k = 2 channels
-}
-// P(reference seen faster), off = reference − test in normalised log speed (Eq. 16)
-function pRef(c, off, th, model) {
-  const T = moments(c.test, th, model), R = moments(c.ref, th, model);
-  return LAPSE / 2 + (1 - LAPSE) * Phi((off + R.m - T.m) / Math.sqrt(T.v + R.v));
-}
-const nllOf = (trials, p) => trials.reduce((s, t) => { const q = p(t); return s - Math.log(t.rf ? q : 1 - q); }, 0);
-
-/* ---------------- staircases ----------------
-   Two weighted up/down staircases per condition (Kaernbach 1991), one converging on P(reference faster) = p and one on
-   1 - p. In a balanced condition the PSE is zero by symmetry and only the slope (sigma) is unknown; it is measured best
-   well away from the PSE, so p is set high. All staircases of all conditions are interleaved in every block. */
-const STAIR = { p: 0.85, delta: 0.3, start: 0.6 };
-function newStairs() {
-  const st = {};
-  CONDS.forEach((c, i) => { st[i + 'u'] = { c: i, p: STAIR.p, off: STAIR.start }; st[i + 'd'] = { c: i, p: 1 - STAIR.p, off: -STAIR.start }; });
-  return st;
-}
-function placeOff(s) { s.off = Math.max(-OFF_LIM, Math.min(s.hi ?? OFF_LIM, Math.round(s.off * 100) / 100)); return s.off; }
-// equilibrium where P(rf)·(1 − p) = (1 − P(rf))·p, i.e. P(rf) = p
-function stairUpdate(s, rf) { s.off += rf ? -STAIR.delta * (1 - s.p) : STAIR.delta * s.p; }
-/* ---------------- contrast calibration ----------------
-   As in the original study, the contrast of each single-channel grating is set so that its noise reaches a common
-   target, sigma = 0.6/sqrt2 (psychometric SD 0.6). The noise is modelled as sigma(c) = 0.42·(c* / c)^beta, and a
-   Bayesian adaptive procedure (psi method, Kontsevich & Tyler 1999) keeps a posterior over the target contrast c* and
-   the exponent beta for each channel. Each trial uses the contrast and reference offset that minimise the expected
-   entropy of c*; offsets well away from the test, where the observer is mostly correct, carry the most information
-   about the noise. The calibrated contrast is the posterior mean of c* (in log contrast). */
-const CAL = { n: 70, cMin: 0.3, cMax: 60, lapse: 0.04 };
-const CAL_OFF = [0.3, 0.45, 0.6, 0.75, 0.9];
-const CAL_SIG = 0.6 / Math.SQRT2;
-const CAL_C = Array.from({ length: 61 }, (_, i) => CAL.cMin * Math.pow(CAL.cMax / CAL.cMin, i / 60));
-const CAL_LT = Array.from({ length: 71 }, (_, i) => Math.log(0.15) + i / 70 * Math.log(100 / 0.15));
-const CAL_B = [0.25, 0.35, 0.5, 0.7, 1, 1.4, 2];
-// P(correct) for every design (offset, contrast) and parameter pair (c*, beta)
-const CAL_D = CAL_OFF.flatMap(off => CAL_C.map(c => ({ off, c })));
-const CAL_P = CAL_D.map(({ off, c }) => {
-  const row = new Float64Array(CAL_LT.length * CAL_B.length);
-  CAL_LT.forEach((lt, i) => CAL_B.forEach((b, j) => { row[i * CAL_B.length + j] = CAL.lapse / 2 + (1 - CAL.lapse) * Phi(off / (Math.SQRT2 * CAL_SIG * Math.exp(b * (lt - Math.log(c))))); }));
-  return row;
-});
-function calMarginalH(post) {   // entropy of the marginal posterior over c*
-  const nb = CAL_B.length; let H = 0;
-  for (let i = 0; i < CAL_LT.length; i++) { let m = 0; for (let j = 0; j < nb; j++) m += post[i * nb + j]; if (m > 0) H -= m * Math.log(m); }
-  return H;
-}
-function calNext(s) {
-  const n = s.post.length, p1 = new Float64Array(n), p0 = new Float64Array(n); let best = Infinity;
-  CAL_P.forEach((P, ci) => {
-    let z = 0;
-    for (let k = 0; k < n; k++) { p1[k] = s.post[k] * P[k]; p0[k] = s.post[k] - p1[k]; z += p1[k]; }
-    for (let k = 0; k < n; k++) { p1[k] /= z; p0[k] /= 1 - z; }
-    const eh = z * calMarginalH(p1) + (1 - z) * calMarginalH(p0);
-    if (eh < best) { best = eh; s.ci = ci; }
-  });
-  s.c = CAL_D[s.ci].c; s.off = CAL_D[s.ci].off;
-}
-function newCal() {
-  const mk = ch => { const n = CAL_LT.length * CAL_B.length, s = { ch, post: new Float64Array(n).fill(1 / n), cs: [] }; calNext(s); return s; };
-  return { A: mk('A'), B: mk('B') };
-}
-function calUpdate(s, correct) {
-  const P = CAL_P[s.ci]; let z = 0;
-  s.cs.push(s.c);
-  for (let k = 0; k < s.post.length; k++) { s.post[k] *= correct ? P[k] : 1 - P[k]; z += s.post[k]; }
-  for (let k = 0; k < s.post.length; k++) s.post[k] /= z;
-  calNext(s);
-}
-// update with any trial: reference offset off, contrast c (%), answer correct or not
-function calObserve(s, off, c, correct) {
-  const nb = CAL_B.length; let z = 0;
-  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) {
-    const k = i * nb + j, P = CAL.lapse / 2 + (1 - CAL.lapse) * Phi(Math.abs(off) / (Math.SQRT2 * CAL_SIG * Math.exp(CAL_B[j] * (CAL_LT[i] - Math.log(c)))));
-    s.post[k] *= correct ? P : 1 - P; z += s.post[k];
-  }
-  for (let k = 0; k < s.post.length; k++) s.post[k] /= z;
-}
-function calBeta(s) {   // posterior mean of the contrast exponent
-  const nb = CAL_B.length; let m = 0;
-  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) m += s.post[i * nb + j] * CAL_B[j];
-  return m;
-}
-function calEstimate(s) {
-  const nb = CAL_B.length; let m = 0;
-  for (let i = 0; i < CAL_LT.length; i++) for (let j = 0; j < nb; j++) m += s.post[i * nb + j] * CAL_LT[i];
-  return Math.exp(m);
-}
-function runQueue(stairs, nPer) { const q = []; for (const k of Object.keys(stairs)) for (let i = 0; i < nPer; i++) q.push(k); return shuffle(q); }
-
-/* ---------------- analysis ---------------- */
-function fitCG(trials) {   // cumulative Gaussian per condition: PSE mu and slope sd
-  const r = nelderMead(x => { const sd = Math.exp(x[1]); if (sd < 0.02 || sd > 5) return 1e9; return nllOf(trials, t => LAPSE / 2 + (1 - LAPSE) * Phi((t.off - x[0]) / sd)); }, [0, Math.log(0.5)], 0.3);
-  return { mu: r.x[0], sd: Math.exp(r.x[1]), nll: r.f };
-}
-function analyze(trials, opts = {}) {
-  const fitT = trials.filter(t => !CONDS[t.c].pred), predT = trials.filter(t => CONDS[t.c].pred);
-  if (fitT.length < 20) return null;
-  // in balanced conditions the prior shifts test and reference alike, so only the channel widths are fitted
-  const th = x => ({ sA: Math.exp(x[0]), sB: Math.exp(x[1]), a: 0 });
-  const bad = p => p.sA < 0.03 || p.sB < 0.03 || p.sA > 3 || p.sB > 3;
-  const obj = x => { const p = th(x); return bad(p) ? 1e9 : nllOf(fitT, t => pRef(CONDS[t.c], t.off, p, 'opt')); };
-  let best = nelderMead(obj, [Math.log(0.4), Math.log(0.4)], 0.4, 800); best = nelderMead(obj, best.x, 0.1, 400);
-  const fit = th(best.x);
-  const res = { fit, nllFit: best.f, nFit: fitT.length, nPred: predT.length, pred: {}, cg: {}, conds: {} };
-  // per-condition descriptive fits
-  CONDS.forEach((c, i) => { const tr = trials.filter(t => t.c === i); if (tr.length >= 8) res.cg[i] = { ...fitCG(tr), n: tr.length }; });
-  if (predT.length) {
-    for (const m of MODELS) res.pred[m.key] = nllOf(predT, t => pRef(CONDS[t.c], t.off, fit, m.key));
-    res.chance = predT.length * Math.LN2;
-    // 'data' bound: empirical proportions in reference-speed bins of 0.15 log units (placement is continuous)
-    const groups = {}; for (const t of predT) { const k = t.c + '|' + Math.round(t.off / 0.15); (groups[k] = groups[k] || [0, 0])[0]++; if (t.rf) groups[k][1]++; }
-    res.data = Object.values(groups).reduce((s, [n, k]) => s - (k ? k * Math.log(k / n) : 0) - (n - k ? (n - k) * Math.log((n - k) / n) : 0), 0);
-    res.cgPred = CONDS.reduce((s, c, i) => s + (c.pred && res.cg[i] ? res.cg[i].nll : 0), 0);
-    res.best = MODELS.reduce((b, m) => res.pred[m.key] < res.pred[b] ? m.key : b, 'opt');
-    // parameter uncertainty: refit the single-channel conditions to bootstrap resamples and repeat the prediction
-    if (opts.boot) {
-      const B = 30, wins = { opt: 0, max: 0, avg: 0 };
-      for (let b = 0; b < B; b++) {
-        const samp = fitT.map(() => fitT[Math.floor(Math.random() * fitT.length)]);
-        const objB = x => { const p = th(x); return bad(p) ? 1e9 : nllOf(samp, t => pRef(CONDS[t.c], t.off, p, 'opt')); };
-        const fb = th(nelderMead(objB, best.x, 0.15, 400).x);
-        const nl = MODELS.map(m => [m.key, nllOf(predT, t => pRef(CONDS[t.c], t.off, fb, m.key))]).sort((x, y) => x[1] - y[1]);
-        wins[nl[0][0]]++;
-      }
-      res.boot = { B, wins };
-    }
-  }
-  return res;
-}
-
-/* ---------------- stimulus rendering ---------------- */
-const Stage = { cv: $('#stage'), ppd: 40, W: 0, H: 0, D: 0, win: null };
-function readPPD() {
-  const card = +$('#e-card').value, dist = +$('#e-dist').value * 10;   // px for 85.6 mm, viewing distance in mm
-  return card / 85.6 * dist * Math.tan(Math.PI / 180);
-}
-function setupStage() {
-  const ppd = Stage.ppd = readPPD();
-  Stage.D = Math.round(4 * ppd); if (Stage.D % 2) Stage.D++;
-  Stage.W = Math.round(17 * ppd); Stage.H = Math.round(6 * ppd);
-  Stage.cv.width = Stage.W; Stage.cv.height = Stage.H; Stage.cv.style.width = Stage.W + 'px'; Stage.cv.style.height = Stage.H + 'px';
-  const D = Stage.D, R = D / 2, w = new Float32Array(D * D);
-  for (let y = 0; y < D; y++) for (let x = 0; x < D; x++) { const r = Math.hypot(x + 0.5 - R, y + 0.5 - R) / R; w[y * D + x] = r < 1 ? 0.5 * (1 + Math.cos(Math.PI * r)) : 0; }
-  Stage.win = w; Stage.img = Stage.cv.getContext('2d').createImageData(D, D);
-  drawFrame({ fix: true });
-}
 // band-limited noise grating profile (bandwidth 0.04·sf), normalised to unit peak
 function profile(sf, len, ppd, rng) {
   const p = new Float32Array(len), n = 24, bw = 0.04 * sf; let mx = 0;
@@ -577,431 +194,86 @@ function profile(sf, len, ppd, rng) {
   for (let x = 0; x < len; x++) p[x] /= mx;
   return p;
 }
-function maxSF(kind, set) { return kind === 'A' ? set.sfA : kind === 'B' ? set.sfB : Math.max(set.sfA, set.sfB); }
-// fastest speed (deg/s) a grating can move without temporal aliasing: at most 0.4 cycles per frame
-const vAlias = (kind, set, hz) => 0.8 * hz / (2 * maxSF(kind, set));
-function makeStim(kind, v, set, rng) {
-  const len = Stage.D + Math.ceil(2 * 12 * 0.6 * Stage.ppd) + 4, comps = [];
-  if (kind !== 'B') comps.push({ c: set.cA / 100, p: profile(set.sfA, len, Stage.ppd, rng) });
-  if (kind !== 'A') comps.push({ c: set.cB / 100, p: profile(set.sfB, len, Stage.ppd, rng) });
-  return { v, comps, len };
-}
-function drawPatch(ctx, st, cx, cy, tms, dir, amp) {
-  const D = Stage.D, img = Stage.img, d = img.data, w = Stage.win;
-  const shift = dir * st.v * tms / 1000 * Stage.ppd, base = (st.len - D) / 2 - shift;
-  const i0 = Math.floor(base), fr = base - i0;
-  const row = new Float32Array(D);
-  for (let x = 0; x < D; x++) { let s = 0; for (const c of st.comps) { const a = c.p[i0 + x], b = c.p[i0 + x + 1]; s += c.c * (a + fr * (b - a)); } row[x] = s; }
-  for (let y = 0, k = 0, j = 0; y < D; y++) for (let x = 0; x < D; x++, k++, j += 4) {
-    // random dither ('noisy bit', Allard & Faubert 2008) renders contrasts below one grey level per step on average
-    let L = Math.floor(128 * (1 + amp * w[k] * row[x]) + Math.random()); L = L < 0 ? 0 : L > 255 ? 255 : L;
-    d[j] = d[j + 1] = d[j + 2] = L; d[j + 3] = 255;
-  }
-  ctx.putImageData(img, Math.round(cx - D / 2), Math.round(cy - D / 2));
-}
-function drawFrame(f) {
-  const ctx = Stage.cv.getContext('2d'), W = Stage.W, H = Stage.H, ppd = Stage.ppd, cx = W / 2, cy = H / 2;
-  ctx.fillStyle = 'rgb(128,128,128)'; ctx.fillRect(0, 0, W, H);
-  if (f.trial) { const t = f.trial; drawPatch(ctx, t.left, cx - 6 * ppd, cy, f.tms, t.dir, f.amp); drawPatch(ctx, t.right, cx + 6 * ppd, cy, f.tms, t.dir, f.amp); }
-  if (f.ind) { const s = 0.3 * ppd; ctx.fillStyle = '#fff'; ctx.fillRect(cx + f.ind * 0.6 * ppd - s / 2, cy - s / 2, s, s); }
-  if (f.fix) { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(cx, cy, Math.max(2, 0.08 * ppd), 0, 7); ctx.fill(); }
-  if (f.text) { ctx.fillStyle = '#111'; ctx.font = `600 ${Math.round(Math.max(14, 0.45 * ppd))}px ${getComputedStyle(document.body).fontFamily}`; ctx.textAlign = 'center'; ctx.fillText(f.text, cx, cy - 0.8 * ppd); }
-}
+const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : 0.5 - 0.5 * Math.cos(Math.PI * x);
 
-/* ======================= EXPERIMENT ======================= */
-const E = { phase: 'idle', block: -1, stairs: null, cal: null, queue: [], trials: [], cur: null, set: null, raf: 0, timer: 0, practice: 0, session: null };
-function expSettings() { return { sfA: +$('#e-sfA').value, sfB: +$('#e-sfB').value, cA: +$('#e-cA').value, cB: +$('#e-cB').value, nPer: +$('#e-len').value, calibrate: $('#e-calib').checked }; }
-function syncSetup() {
-  $('#cardbox').style.width = $('#e-card').value + 'px';
-  $('#eo-dist').textContent = $('#e-dist').value + ' cm';
-  $('#eo-ppd').textContent = readPPD().toFixed(1) + ' px/°';
-  $('#eo-cA').textContent = $('#e-cA').value + '%'; $('#eo-cB').textContent = $('#e-cB').value + '%';
-  try { localStorage.setItem('si-cal', JSON.stringify({ card: $('#e-card').value, dist: $('#e-dist').value })); } catch (e) {}
-  if (E.phase === 'idle') { setupStage(); setRunsChip(); }
-}
-function setRunsChip() {   // chip 0 = practice, 1 = calibration, 2–4 = blocks
-  const chips = $('#e-runs').children, n = chips.length;
-  const at = E.phase === 'idle' ? -1 : E.phase === 'practice' ? 0 : E.phase === 'cal' ? 1 : E.phase === 'done' ? n : E.block < 0 ? 1 : E.block + 2;
-  for (let i = 0; i < n; i++) chips[i].className = i < at || (E.phase === 'break' && i === at) ? 'done' : i === at ? 'on' : '';
-  chips[1].hidden = !(E.phase === 'idle' || E.phase === 'done' || !E.set ? $('#e-calib').checked : E.set.calibrate);
-}
-function lockSetup(on) { for (const el of document.querySelectorAll('#tab-exp .controls input, #tab-exp .controls select, #e-card')) el.disabled = on; $('#e-start').disabled = on; $('#e-stop').disabled = !on; }
-function measureRefresh() {
-  return new Promise(res => { const ts = []; const f = t => { ts.push(t); if (ts.length < 45) requestAnimationFrame(f); else { const d = ts.slice(5).map((t, i, a) => i ? t - a[i - 1] : 0).slice(1).sort((x, y) => x - y); res(1000 / d[Math.floor(d.length / 2)]); } }; requestAnimationFrame(f); });
-}
-async function startSession() {
-  setupStage();
-  if (Stage.W > $('.stagewrap').clientWidth + 2) { $('#e-status').textContent = 'The window is too narrow for this calibration. Widen it or sit further away.'; return; }
-  $('#e-status').textContent = 'Measuring the display refresh rate…';
-  E.hz = await measureRefresh();
-  const set0 = expSettings();
-  if (vAlias('AB', set0, E.hz) < V_TEST * 1.6) { $('#e-status').textContent = `This display refreshes at ${Math.round(E.hz)} Hz, too slowly for ${Math.max(set0.sfA, set0.sfB)} c/° gratings at ${V_TEST}°/s. Choose lower spatial frequencies.`; return; }
-  E.set = expSettings(); E.set0 = { cA: E.set.cA, cB: E.set.cB }; $('#e-next').hidden = true; E.trials = []; E.cal = E.set.calibrate ? null : (loadCal(E.set) || newCal()); E.calFrom = E.set.calibrate ? 'calibration' : E.cal.prior ? 'previous sessions' : 'none'; E.block = -1; E.phase = 'practice'; E.practice = 0;
-  E.session = { id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), started: new Date().toISOString() };
-  lockSetup(true); setRunsChip(); $('#e-download').disabled = true;
-  $('#e-status').textContent = 'Practice: 6 trials';
-  nextTrial();
-}
-function abortSession() { cancelAnimationFrame(E.raf); clearTimeout(E.timer); E.phase = 'idle'; E.block = -1; lockSetup(false); setButtons(false); setRunsChip(); drawFrame({ fix: true }); $('#e-prompt').textContent = 'Session aborted. Nothing was saved.'; $('#e-status').textContent = 'Ready'; }
-function beginCal() {
-  E.phase = 'cal'; E.cal = newCal(); E.calTr = [];
-  E.queue = shuffle([...Array(CAL.n).fill('A'), ...Array(CAL.n).fill('B')]); E.runLen = E.queue.length; setRunsChip();
-  nextTrial();
-}
-function endCal() {
-  E.set.cA = +calEstimate(E.cal.A).toFixed(2); E.set.cB = +calEstimate(E.cal.B).toFixed(2);
-  showBreak(`Calibration done: contrast ${E.set.cA.toFixed(1)}% for the coarse grating and ${E.set.cB.toFixed(1)}% for the fine one. The ${BLOCKS} blocks that follow mix all gratings.`, () => beginMain());
-}
-// all conditions and staircases are interleaved across BLOCKS blocks; staircases continue across blocks
-function beginMain() {
-  E.stairs = newStairs();
-  for (const st of Object.values(E.stairs)) st.hi = Math.min(OFF_LIM, toLog(vAlias(CONDS[st.c].ref, E.set, E.hz)) - ST);
-  E.queue = runQueue(E.stairs, E.set.nPer); E.mainLen = E.queue.length; E.blockLen = Math.ceil(E.mainLen / BLOCKS);
-  beginBlock(0);
-}
-function beginBlock(b) { E.block = b; E.phase = 'run'; E.blockDone = 0; setRunsChip(); nextTrial(); }
-function showBreak(text, next) {
-  E.phase = 'break'; setButtons(false); setRunsChip();
-  drawFrame({ fix: false, text: '' });
-  $('#e-prompt').innerHTML = `${text} Press <kbd>Space</kbd> or the button to continue.`;
-  $('#e-faster').disabled = false; $('#e-faster').textContent = 'Continue'; $('#e-slower').hidden = true;
-  E.onContinue = () => { $('#e-faster').textContent = '↑ Marked was faster'; $('#e-slower').hidden = false; next(); };
-}
-function nextTrial() {
-  let condIdx, key = null, off;
-  if (E.phase === 'practice') {
-    if (E.practice >= 6) {
-      if (E.set.calibrate) showBreak('Practice done. A short calibration now adjusts the contrast of each grating to your sensitivity.', beginCal);
-      else showBreak(`Practice done. The ${BLOCKS} blocks that follow mix all gratings.`, beginMain);
-      return;
+class Demo {
+  constructor(id, spec) {
+    this.el = $('#' + id); this.spec = spec; this.cv = this.el.querySelector('canvas'); this.ctx = this.cv.getContext('2d');
+    this.raf = 0;
+    this.el.querySelector('[data-play]').addEventListener('click', () => this.play(true));
+    this.el.querySelector('[data-play-rev]').addEventListener('click', () => this.play(false));
+    for (const b of this.el.querySelectorAll('[data-ans]')) b.addEventListener('click', () => this.answer(b.dataset.ans));
+    this.layout();
+  }
+  layout() {
+    if (this.raf) return;
+    const avail = this.el.querySelector('.stagewrap').clientWidth - 24;
+    const D = Math.max(160, Math.min(320, Math.floor(avail))) & ~1;
+    if (D === this.D) return;
+    this.D = D; this.ppd = D / PATCH_DEG; this.cv.width = this.cv.height = D;
+    const w = this.win = new Float32Array(D * D), R = D / 2;
+    for (let y = 0; y < D; y++) for (let x = 0; x < D; x++) { const r = Math.hypot(x + 0.5 - R, y + 0.5 - R) / R; w[y * D + x] = r < 1 ? 0.5 * (1 + Math.cos(Math.PI * r)) : 0; }
+    this.img = this.ctx.createImageData(D, D);
+    this.draw(null);
+  }
+  // contrast of each component at time t (ms)
+  amps(t) {
+    const env = Math.min(ease(t / T.fade), ease((T_END - t) / T.fade));
+    const x = ease((t - T.fade - T.first) / T.xfade), [a, b] = this.order;
+    return a.map((v, i) => env * (v + (b[i] - v) * x));
+  }
+  draw(t) {
+    const D = this.D, d = this.img.data, w = this.win;
+    if (t === null) { for (let k = 0, j = 0; k < D * D; k++, j += 4) { d[j] = d[j + 1] = d[j + 2] = 128; d[j + 3] = 255; } }
+    else {
+      const am = this.amps(t), shift = this.dir * SPEED * t / 1000 * this.ppd, base = (this.len - D) / 2 - shift;
+      const i0 = Math.floor(base), fr = base - i0, row = new Float32Array(D);
+      for (let x = 0; x < D; x++) { let s = 0; this.prof.forEach((p, c) => { if (am[c]) { const a = p[i0 + x]; s += am[c] * (a + fr * (p[i0 + x + 1] - a)); } }); row[x] = s; }
+      // random dither ('noisy bit') keeps contrasts finer than one grey level
+      for (let y = 0, k = 0, j = 0; y < D; y++) for (let x = 0; x < D; x++, k++, j += 4) {
+        let L = Math.floor(128 * (1 + w[k] * row[x]) + Math.random()); L = L < 0 ? 0 : L > 255 ? 255 : L;
+        d[j] = d[j + 1] = d[j + 2] = L; d[j + 3] = 255;
+      }
     }
-    condIdx = E.practice % 2; off = Math.min((Math.random() < 0.5 ? -1 : 1) * 0.7, toLog(vAlias(CONDS[condIdx].ref, E.set, E.hz)) - ST);
-  } else if (E.phase === 'cal') {
-    if (!E.queue.length) return endCal();
-    key = E.queue.pop(); condIdx = key === 'A' ? 0 : 1; off = (Math.random() < 0.5 ? -1 : 1) * E.cal[key].off;
-  } else {
-    if (!E.queue.length) return finishSession();
-    if (E.blockDone >= E.blockLen) { const b = E.block; showBreak(`Block ${b + 1} of ${BLOCKS} complete. Take a short break.`, () => beginBlock(b + 1)); return; }
-    key = E.queue.pop(); condIdx = E.stairs[key].c; off = placeOff(E.stairs[key]);
+    this.ctx.putImageData(this.img, 0, 0);
+    this.ctx.fillStyle = '#111'; this.ctx.beginPath(); this.ctx.arc(D / 2, D / 2, Math.max(2.5, 0.08 * this.ppd), 0, 7); this.ctx.fill();
   }
-  const c = CONDS[condIdx], rng = mulberry((Math.random() * 1e9) | 0);
-  const set = E.phase === 'cal' ? { ...E.set, cA: E.cal.A.c, cB: E.cal.B.c } : E.set;
-  const testLeft = Math.random() < 0.5, ind = Math.random() < 0.5 ? -1 : 1, dir = Math.random() < 0.5 ? -1 : 1;
-  const test = makeStim(c.test, V_TEST, set, rng), ref = makeStim(c.ref, toLin(ST + off), set, rng);
-  E.cur = { condIdx, key, off, testLeft, ind, dir, left: testLeft ? test : ref, right: testLeft ? ref : test };
-  if (E.phase === 'cal') $('#e-status').textContent = `Calibration · trial ${E.runLen - E.queue.length} of ${E.runLen}`;
-  if (E.phase === 'run') $('#e-status').textContent = `Block ${E.block + 1} of ${BLOCKS} · trial ${E.mainLen - E.queue.length} of ${E.mainLen}`;
-  $('#e-prompt').textContent = '';
-  setButtons(false);
-  const t0 = performance.now();
-  const frame = now => {
-    const t = now - t0;
-    if (t < 400) drawFrame({ fix: true });
-    else if (t < 1000) { const g = t - 400, amp = Math.min(1, g / 100, (600 - g) / 100); drawFrame({ fix: true, trial: E.cur, tms: g, amp: Math.max(0, amp) }); }
-    else if (t < 1200) drawFrame({ fix: true });
-    else if (t < 1500) { drawFrame({ fix: true, ind: E.cur.ind }); if (!E.cur.open) { E.cur.open = true; E.cur.t1 = now; setButtons(true); $('#e-prompt').textContent = 'Was the marked grating faster or slower?'; } }
-    else { drawFrame({ fix: true }); return; }
-    E.raf = requestAnimationFrame(frame);
-  };
-  E.raf = requestAnimationFrame(frame);
-}
-function setButtons(on) { $('#e-faster').disabled = !on; $('#e-slower').disabled = !on; }
-function respond(faster) {
-  if (E.phase === 'break') { if (E.onContinue) { const f = E.onContinue; E.onContinue = null; f(); } return; }
-  if (!E.cur || !E.cur.open || E.cur.answered) return;
-  E.cur.answered = true; setButtons(false);
-  const cur = E.cur, refSide = cur.testLeft ? 1 : -1, markedRef = cur.ind === refSide;
-  const rf = markedRef ? faster : !faster;
-  if (E.phase === 'practice') E.practice++;
-  else if (E.phase === 'cal') {
-    const s = E.cal[cur.key], correct = rf === cur.off > 0;
-    E.calTr.push([cur.key, +s.c.toFixed(2), cur.off, correct ? 1 : 0]);
-    calUpdate(s, correct);
-  } else {
-    E.blockDone++;
-    E.trials.push({ c: cur.condIdx, off: cur.off, rf: rf ? 1 : 0, ind: cur.ind, ts: cur.testLeft ? -1 : 1, dir: cur.dir, rt: Math.round(performance.now() - cur.t1) });
-    stairUpdate(E.stairs[cur.key], rf);
+  setAnswers(on) { for (const b of this.el.querySelectorAll('[data-ans]')) b.disabled = !on; }
+  play(fw) {
+    cancelAnimationFrame(this.raf); this.raf = 0; this.layout();
+    this.fw = fw; this.order = this.fw ? this.spec.fwd : [this.spec.fwd[1], this.spec.fwd[0]];
+    this.dir = Math.random() < 0.5 ? -1 : 1;
+    this.len = this.D + 2 * Math.ceil(SPEED * T_END / 1000 * this.ppd) + 4;   // drift either way from the centre
+    const rng = mulberry((Math.random() * 1e9) | 0);
+    this.prof = this.spec.sf.map(sf => profile(sf, this.len, this.ppd, rng));
+    this.el.querySelector('[data-reveal]').hidden = true; this.setAnswers(false);
+    const btns = this.el.querySelectorAll('[data-play], [data-play-rev]'); btns.forEach(b => { b.disabled = true; });
+    const t0 = performance.now();
+    const frame = now => {
+      const t = now - t0;
+      if (t >= T_END) { this.raf = 0; this.draw(null); btns.forEach(b => { b.disabled = false; }); this.setAnswers(true); return; }
+      this.draw(t); this.raf = requestAnimationFrame(frame);
+    };
+    this.raf = requestAnimationFrame(frame);
   }
-  cancelAnimationFrame(E.raf); drawFrame({ fix: true }); $('#e-prompt').textContent = '';
-  E.timer = setTimeout(nextTrial, 500);
-}
-function finishSession() {
-  E.phase = 'done'; setRunsChip(); lockSetup(false); setButtons(false); drawFrame({ fix: true });
-  E.session.finished = new Date().toISOString();
-  $('#e-prompt').textContent = 'Session complete. Thank you.'; $('#e-status').textContent = `${E.trials.length} trials recorded`;
-  const res = analyze(E.trials, { boot: true });
-  const payload = buildPayload(res);
-  E.payload = payload; $('#e-download').disabled = false;
-  try { const all = JSON.parse(localStorage.getItem('si-sessions') || '[]'); all.push(payload); localStorage.setItem('si-sessions', JSON.stringify(all.slice(-20))); } catch (e) {}
-  upload(payload);
-  showResults('Your session', E.trials, res, null);
-  suggestNext(res);
-}
-/* Calibration leaves each channel within about ±20% of the target noise, so two channels can still end up unequal.
-   The single-channel trials of the main blocks are evidence about the same noise model, so they update the calibration
-   posterior; it is kept in this browser (per pair of spatial frequencies), and the next session can start from the
-   refined contrasts without recalibrating. In simulations, one session brings 75% of observers within a factor 1.25
-   between the channels (60% after calibration alone), two sessions 87%. */
-const calKey = set => `si-calpost-${set.sfA}-${set.sfB}`;
-function loadCal(set) {
-  try {
-    const d = JSON.parse(localStorage.getItem(calKey(set))), n = CAL_LT.length * CAL_B.length;
-    if (!d || d.A.length !== n || d.B.length !== n) return null;
-    const mk = (ch, a) => { const s = { ch, post: Float64Array.from(a), cs: [] }; calNext(s); return s; };
-    return { A: mk('A', d.A), B: mk('B', d.B), prior: true };
-  } catch (e) { return null; }
-}
-function saveCal(set, cal) { try { localStorage.setItem(calKey(set), JSON.stringify({ A: Array.from(cal.A.post, x => +x.toPrecision(5)), B: Array.from(cal.B.post, x => +x.toPrecision(5)) })); } catch (e) {} }
-function suggestNext(res) {
-  if (!res || !E.cal) return;
-  for (const t of E.trials) if (!CONDS[t.c].pred && t.off !== 0) { const ch = CONDS[t.c].test; calObserve(E.cal[ch], t.off, ch === 'A' ? E.set.cA : E.set.cB, (t.rf === 1) === t.off > 0); }
-  saveCal(E.set, E.cal);
-  const q = res.fit.sA / res.fit.sB, matched = Math.abs(Math.log(q)) < Math.log(1.25);
-  E.next = { cA: +calEstimate(E.cal.A).toFixed(1), cB: +calEstimate(E.cal.B).toFixed(1) };
-  $('#e-next-text').innerHTML = `Channel noise in this session: σ<sub>A</sub> = ${res.fit.sA.toFixed(2)}, σ<sub>B</sub> = ${res.fit.sB.toFixed(2)} (ratio ${q.toFixed(2)}); ${matched ? 'the channels were well matched.' : '<b>the channels were not well matched</b>, which weakens the comparison of the models.'} Combining the calibration with this session, contrasts of ${E.next.cA}% for A and ${E.next.cB}% for B should bring both to σ ≈ 0.42. The next session can use them without recalibrating, and each session refines them further.`;
-  $('#e-next-status').textContent = ''; $('#e-next').hidden = false;
-}
-$('#e-next-use').addEventListener('click', () => {
-  if (!E.next) return;
-  $('#e-cA').value = E.next.cA; $('#e-cB').value = E.next.cB; $('#e-calib').checked = false; syncSetup();
-  $('#e-next-status').textContent = `Set: A ${$('#e-cA').value}%, B ${$('#e-cB').value}%, calibration off (Stimulus settings).`;
-});
-function buildPayload(res) {
-  return {
-    version: 1, session_id: E.session.id, participant: $('#e-part').value.trim().slice(0, 24),
-    started: E.session.started, finished: E.session.finished, user_agent: navigator.userAgent,
-    screen: { w: screen.width, h: screen.height, dpr: window.devicePixelRatio || 1, hz: +(E.hz || 0).toFixed(1) }, px_per_deg: +Stage.ppd.toFixed(2),
-    settings: { ...E.set, contrast_source: E.calFrom, view_cm: +$('#e-dist').value, test_speed: V_TEST, s0: S0, blocks: BLOCKS, placement: `interleaved weighted staircases, p ${STAIR.p}`,
-      calibration: E.set.calibrate ? { start_cA: E.set0.cA, start_cB: E.set0.cB, method: 'psi (c*, beta)', trials: E.calTr, trial_fields: ['channel', 'contrast_pct', 'ref_minus_test_logspeed', 'correct'] } : null },
-    conditions: CONDS.map(c => c.id),
-    fit: res ? { sigma_A: res.fit.sA, sigma_B: res.fit.sB, nll_fit: res.nllFit, nll_opt: res.pred.opt, nll_max: res.pred.max, nll_avg: res.pred.avg, nll_chance: res.chance, nll_data: res.data, best_model: res.best, boot_wins: res.boot ? res.boot.wins : null } : null,
-    trials: E.trials.map(t => [t.c, t.off, t.rf, t.ind, t.ts, t.dir, t.rt]),
-    trial_fields: ['cond', 'ref_minus_test_logspeed', 'ref_seen_faster', 'marked_side', 'test_side', 'drift_dir', 'rt_ms']
-  };
-}
-function upload(payload) {
-  if (!SHEET_ENDPOINT) { $('#e-save').textContent = 'Uploading is not configured on this copy of the page. Download the session to keep it.'; return; }
-  $('#e-save').textContent = 'Saving your session…';
-  fetch(SHEET_ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
-    .then(() => { $('#e-save').textContent = 'Session saved. Thank you for contributing; you can also download a copy.'; })
-    .catch(() => { $('#e-save').textContent = 'Upload failed. Please download the session and send the file to the experimenter.'; });
-}
-function download(payload) {
-  const blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' }), a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `signal-integration-${payload.participant || 'anon'}-${payload.session_id.slice(0, 8)}.json`;
-  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-}
-$('#e-download').addEventListener('click', () => E.payload && download(E.payload));
-$('#e-load').addEventListener('change', ev => {
-  const f = ev.target.files[0]; if (!f) return;
-  f.text().then(txt => {
-    const p = JSON.parse(txt), trials = p.trials.map(r => ({ c: r[0], off: r[1], rf: r[2] }));
-    showResults(`Session ${p.participant || ''} ${(p.session_id || '').slice(0, 8)}`, trials, analyze(trials, { boot: true }), null);
-    $('#results').scrollIntoView({ behavior: 'smooth' });
-  }).catch(() => { $('#e-save').textContent = 'That file could not be read as a session.'; });
-  ev.target.value = '';
-});
-$('#e-start').addEventListener('click', startSession);
-$('#e-stop').addEventListener('click', abortSession);
-$('#e-faster').addEventListener('click', () => respond(true));
-$('#e-slower').addEventListener('click', () => respond(false));
-document.addEventListener('keydown', e => {
-  if ($('#tab-exp').hidden || E.phase === 'idle' || E.phase === 'done') return;
-  if (E.phase === 'break' && (e.key === ' ' || e.key === 'ArrowUp')) { e.preventDefault(); respond(true); return; }
-  if (e.key === 'ArrowUp' || e.key === 'f') { e.preventDefault(); respond(true); }
-  if (e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); respond(false); }
-});
-for (const id of ['#e-card', '#e-dist', '#e-cA', '#e-cB', '#e-sfA', '#e-sfB', '#e-calib']) $(id).addEventListener('input', syncSetup);
-
-/* ======================= SIMULATION ======================= */
-function simTruth() { return { sA: +$('#s-sA').value, sB: +$('#s-sB').value, a: 0, rule: $('#s-rule').value, nPer: +$('#s-n').value }; }
-function simSession(T) {
-  const trials = [];
-  const stairs = newStairs(), q = runQueue(stairs, T.nPer);
-  while (q.length) {
-    const k = q.pop(), s = stairs[k], c = CONDS[s.c]; placeOff(s);
-    const Mt = moments(c.test, T, T.rule), Mr = moments(c.ref, T, T.rule);
-    let rf = (s.off + Mr.m + Math.sqrt(Mr.v) * randn()) > (Mt.m + Math.sqrt(Mt.v) * randn());
-    if (Math.random() < LAPSE) rf = Math.random() < 0.5;
-    trials.push({ c: s.c, off: s.off, rf: rf ? 1 : 0 }); stairUpdate(s, rf);
+  answer(a) {
+    this.setAnswers(false);
+    const pred = this.fw ? this.spec.pred : (this.spec.pred === 'faster' ? 'slower' : 'faster');
+    const say = { faster: 'speed up', slower: 'slow down', same: 'stay the same' };
+    const r = this.el.querySelector('[data-reveal]');
+    r.innerHTML = `The speed never changed: the grating drifted at ${SPEED}°/s throughout, and only ${this.spec.what(this.fw)}. ` +
+      (a === pred ? `You saw it ${say[a]}, as most people do.` : `You saw it ${say[a]}; most people see it <b>${say[pred]}</b>.`);
+    r.hidden = false;
   }
-  return trials;
 }
-function syncSim() { const T = simTruth(); $('#so-sA').textContent = T.sA.toFixed(2); $('#so-sB').textContent = T.sB.toFixed(2); }
-$('#s-run').addEventListener('click', () => { const T = simTruth(), tr = simSession(T); showResults('Simulated session', tr, analyze(tr, { boot: true }), T); $('#s-status').textContent = `${tr.length} simulated trials`; });
-$('#s-rep').addEventListener('click', () => {
-  const T = simTruth(), wins = { opt: 0, max: 0, avg: 0 }, est = [];
-  let i = 0; $('#s-rep').disabled = true;
-  const step = () => {
-    for (let k = 0; k < 5 && i < 50; k++, i++) { const r = analyze(simSession(T)); wins[r.best]++; est.push(r.fit); }
-    $('#s-status').textContent = `Session ${i} of 50…`;
-    if (i < 50) { setTimeout(step, 0); return; }
-    $('#s-rep').disabled = false; $('#s-status').textContent = `50 sessions with the ${MODELS.find(m => m.key === T.rule).name.toLowerCase()} observer`;
-    const mean = f => est.reduce((s, e) => s + f(e), 0) / est.length;
-    $('#s-repcard').hidden = false;
-    $('#s-reptable').innerHTML = `<tr><th>Model</th><th>Sessions where it predicted best</th></tr>` +
-      MODELS.map(m => `<tr><td><span class="sw" style="background:var(${m.cls})"></span>${m.name}${m.key === T.rule ? ' <span class="status">(true rule)</span>' : ''}</td><td class="n">${wins[m.key]} / 50</td></tr>`).join('') +
-      `<tr><td>Mean fitted σ<sub>A</sub>, σ<sub>B</sub></td><td class="n">${mean(e => e.sA).toFixed(2)}, ${mean(e => e.sB).toFixed(2)} <span class="status">(true ${T.sA}, ${T.sB})</span></td></tr>`;
-  };
-  step();
-});
-for (const id of ['#s-sA', '#s-sB']) $(id).addEventListener('input', syncSim);
+const demos = Object.entries(DEMOS).map(([k, s]) => new Demo('d-' + k, s));
+new ResizeObserver(() => demos.forEach(d => d.layout())).observe(document.body);
 
-/* ======================= RESULTS ======================= */
-let TK = {}, LAST = null;
-function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); TK = { ink: g('--ink'), ink2: g('--ink-2'), ink3: g('--ink-3'), rule: g('--rule'), panel: g('--panel'), data: g('--data'), opt: g('--opt'), max: g('--max'), avg: g('--avg'), font: g('--font-data') }; }
-function prep(cv) {
-  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return null;
-  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
-  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h); return { ctx, w, h };
-}
-function txt(ctx, s, x, y, al = 'left', bl = 'alphabetic', col = TK.ink3, sz = 11) { ctx.fillStyle = col; ctx.font = `${sz}px ${TK.font}`; ctx.textAlign = al; ctx.textBaseline = bl; ctx.fillText(s, x, y); }
-function marker(ctx, x, y, r, shape, fill, ring) {
-  ctx.beginPath();
-  if (shape === 'square') ctx.rect(x - r * .9, y - r * .9, r * 1.8, r * 1.8);
-  else if (shape === 'diamond') { ctx.moveTo(x, y - r * 1.2); ctx.lineTo(x + r * 1.2, y); ctx.lineTo(x, y + r * 1.2); ctx.lineTo(x - r * 1.2, y); ctx.closePath(); }
-  else ctx.arc(x, y, r, 0, Math.PI * 2);
-  if (ring) { ctx.lineWidth = 2; ctx.strokeStyle = fill; ctx.fillStyle = TK.panel; ctx.fill(); ctx.stroke(); }
-  else { ctx.fillStyle = fill; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = TK.panel; ctx.stroke(); }
-}
-const nearest = pts => (mx, my) => { let b = null, bd = 196; for (const p of pts) { const d = (p.x - mx) ** 2 + (p.y - my) ** 2; if (d < bd) { bd = d; b = p.html; } } return b; };
-const mcol = k => TK[k];
-
-function showResults(title, trials, res, truth) {
-  LAST = { title, trials, res, truth };
-  $('#r-title').textContent = `Results · ${title}`;
-  if (!res) { $('#r-body').hidden = true; $('#r-verdict').textContent = 'Not enough data to fit the model.'; return; }
-  $('#r-body').hidden = false;
-  const f = res.fit;
-  const pr = k => Math.sqrt(moments('AB', f, k).v);
-  let v = `Noise fitted to the single-channel conditions: σ<sub>A</sub> = <b>${f.sA.toFixed(2)}</b>, σ<sub>B</sub> = <b>${f.sB.toFixed(2)}</b>${truth ? ` (true ${truth.sA}, ${truth.sB})` : ''}. For the compound, optimal integration predicts σ = ${pr('opt').toFixed(2)}, the most reliable channel ${pr('max').toFixed(2)} and averaging ${pr('avg').toFixed(2)}.`;
-  const iAB = CONDS.findIndex(c => c.test === 'AB'), dAB = res.cg[iAB] ? dataSigma(res, iAB) : null;
-  if (res.nPred) {
-    const best = MODELS.find(m => m.key === res.best);
-    if (dAB != null) v += ` Measured: <b>σ = ${dAB.toFixed(2)}</b>.`;
-    const rank = MODELS.map(m => m.key).sort((x, y) => res.pred[x] - res.pred[y]), nm = k => MODELS.find(m => m.key === k).name.toLowerCase();
-    const tie = res.pred[rank[1]] - res.pred[rank[0]] < 0.5;
-    v += ` Predicting the ${res.nPred} compound-grating trials without further fitting, ${tie ? `<b>${nm(rank[0])}</b> and <b>${nm(rank[1])}</b> fit equally well` : `<b>${best.name.toLowerCase()}</b> fits best`} (−log L ${res.pred[res.best].toFixed(1)}; chance ${res.chance.toFixed(1)}, data ${res.data.toFixed(1)}).`;
-    if (res.boot) { const bt = res.boot, pc = k => Math.round(100 * bt.wins[k] / bt.B); v += ` Refitting the single-channel conditions to ${bt.B} bootstrap resamples, the same model wins in <b>${pc(res.best)}%</b> of cases (optimal ${pc('opt')}%, most reliable ${pc('max')}%, averaging ${pc('avg')}%).`; }
-    if (truth) v += ` The simulated observer used ${MODELS.find(m => m.key === truth.rule).name.toLowerCase()}.`;
-  } else v += ' The compound condition has no data yet, so no predictions can be compared.';
-  if (Math.abs(f.sA - f.sB) < 0.1 * Math.max(f.sA, f.sB)) v += ' With nearly equal channels, optimal integration and averaging predict the same threshold; only the most reliable channel is distinguished.';
-  const weak = [['A', f.sA], ['B', f.sB]].filter(([, x]) => x > 1);
-  if (weak.length) v += ` <br><b>Check the stimulus:</b> responses to channel ${weak.map(w => w[0]).join(' and ')} were close to chance (σ̂ = ${weak.map(w => w[1].toFixed(2)).join(', ')}), so the channel was probably too faint to judge. Raise its contrast or use a lower spatial frequency.`;
-  $('#r-verdict').innerHTML = v;
-  renderResults();
-  $('#r-table').innerHTML = `<tr><th>Condition</th><th>Trials</th><th>Data: noise <span class="nt">σ</span></th>${MODELS.map(m => `<th><span class="sw" style="background:var(${m.cls})"></span>${m.name}</th>`).join('')}</tr>` +
-    CONDS.map((c, i) => {
-      const cg = res.cg[i]; if (!cg) return '';
-      const dat = `σ ${dataSigma(res, i).toFixed(2)}`;
-      const mv = MODELS.map(m => `<td class="n">σ ${Math.sqrt(moments(c.test, f, m.key).v).toFixed(2)}${!c.pred ? ' <span class="status">fit</span>' : ''}</td>`).join('');
-      return `<tr><td>${condName(c)}</td><td class="n">${cg.n}</td><td class="n">${dat}</td>${mv}</tr>`;
-    }).join('');
-}
-function renderResults() {
-  if (!LAST || !LAST.res) return;
-  readTokens();
-  const { trials, res } = LAST, f = res.fit;
-  drawGOP($('#c-gop'), res);
-  drawSummary($('#c-thr'), res, [0, 1, 2], 'thr');
-  const host = $('#c-psy');
-  if (host.children.length !== CONDS.length) { host.innerHTML = CONDS.map((c, i) => `<figure><figcaption>${condName(c)}${c.pred ? ' · predicted' : ' · fit'}</figcaption><canvas class="chart" id="psy-${i}"></canvas></figure>`).join(''); }
-  CONDS.forEach((c, i) => drawPsy($('#psy-' + i), trials.filter(t => t.c === i), c, f));
-}
-// goodness of prediction on a scale from chance (0) to data (1)
-function drawGOP(cv, res) {
-  const g = prep(cv); if (!g) return; const { ctx, w, h } = g;
-  if (!res.nPred) { txt(ctx, 'needs compound-condition data', w / 2, h / 2, 'center', 'middle'); cv._hit = null; return; }
-  const sc = nll => (res.chance - nll) / (res.chance - res.data);
-  const rows = MODELS.map(m => ({ name: m.name, col: mcol(m.key), val: sc(res.pred[m.key]), nll: res.pred[m.key] }));
-  const cgv = sc(res.cgPred), lo = Math.min(0, ...rows.map(r => r.val)) - 0.05, hi = 1.05;
-  const L = 12, R = 14, T = 10, B = 34, pw = w - L - R, ph = h - T - B, X = v => L + (v - lo) / (hi - lo) * pw;
-  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
-  for (const v of [0, 0.5, 1]) { ctx.beginPath(); ctx.moveTo(X(v), T); ctx.lineTo(X(v), T + ph); ctx.stroke(); }
-  txt(ctx, 'chance', X(0), T + ph + 6, 'center', 'top'); txt(ctx, 'data', X(1), T + ph + 6, 'center', 'top');
-  txt(ctx, 'goodness of prediction', L + pw / 2, h - 2, 'center', 'bottom', TK.ink2);
-  ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = TK.ink3; ctx.beginPath(); ctx.moveTo(X(cgv), T); ctx.lineTo(X(cgv), T + ph); ctx.stroke(); ctx.restore();
-  const bh = Math.min(26, ph / 4.2), pts = [];
-  rows.forEach((r, i) => {
-    const y = T + 6 + i * (bh + 12), x0 = X(0), x1 = X(r.val);
-    ctx.fillStyle = r.col; const xa = Math.min(x0, x1), wd = Math.max(2, Math.abs(x1 - x0));
-    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(xa, y, wd, bh, 4) : ctx.rect(xa, y, wd, bh); ctx.fill();
-    txt(ctx, r.name, Math.max(x0, x1) + 6 > L + pw - 120 ? Math.min(x0, x1) + 6 : Math.max(x0, x1) + 6, y + bh / 2, 'left', 'middle', Math.max(x0, x1) + 6 > L + pw - 120 ? TK.panel : TK.ink, 11);
-    pts.push({ x: x1, y: y + bh / 2, html: `${r.name}<br>−log L = ${r.nll.toFixed(1)}<br>score ${r.val.toFixed(2)} (0 chance, 1 data)` });
-  });
-  txt(ctx, 'cum. Gaussian', X(cgv) - 4, T + ph - 4, 'right', 'alphabetic', TK.ink3, 10);
-  cv._hit = nearest(pts);
-}
-// stimulus noise from the data: in a balanced condition the psychometric SD is sqrt2 * sigma
-const dataSigma = (res, i) => res.cg[i] ? res.cg[i].sd / Math.SQRT2 : null;
-function drawSummary(cv, res, idxs, kind) {
-  const g = prep(cv); if (!g) return; const { ctx, w, h } = g, f = res.fit;
-  const L = 44, R = 10, T = 12, B = 40, pw = w - L - R, ph = h - T - B;
-  const val = (c, model) => { const Tm = moments(c.test, f, model), Rm = moments(c.ref, f, model); return kind === 'thr' ? Math.sqrt(Tm.v) : toLin(ST + Tm.m - Rm.m); };
-  const dat = i => res.cg[i] ? (kind === 'thr' ? dataSigma(res, i) : toLin(ST + res.cg[i].mu)) : null;
-  const all = [];
-  idxs.forEach(i => { const d = dat(i); if (d != null) all.push(d); MODELS.forEach(m => all.push(val(CONDS[i], m.key))); });
-  let lo = kind === 'thr' ? 0 : Math.min(...all, V_TEST) * 0.85, hi = Math.max(...all, kind === 'thr' ? 0.5 : V_TEST) * 1.12;
-  const Y = v => T + (hi - v) / (hi - lo) * ph, X = k => L + (k + 0.5) / idxs.length * pw;
-  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
-  const step = kind === 'thr' ? (hi > 1 ? 0.5 : 0.2) : (hi - lo > 4 ? 1 : 0.5);
-  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) { ctx.beginPath(); ctx.moveTo(L, Y(v)); ctx.lineTo(L + pw, Y(v)); ctx.stroke(); txt(ctx, v.toFixed(1), L - 6, Y(v), 'right', 'middle'); }
-  if (kind === 'match') { ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = TK.ink3; ctx.beginPath(); ctx.moveTo(L, Y(V_TEST)); ctx.lineTo(L + pw, Y(V_TEST)); ctx.stroke(); ctx.restore(); txt(ctx, 'test 3°/s', L + 4, Y(V_TEST) - 4, 'left', 'bottom', TK.ink3, 10); }
-  const pts = [];
-  idxs.forEach((i, k) => {
-    const c = CONDS[i], x = X(k);
-    txt(ctx, label(c.test), x, T + ph + 8, 'center', 'top', TK.ink2, 11);
-    if (!c.pred) { const y = Y(val(c, 'opt')); ctx.strokeStyle = TK.ink3; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 14, y); ctx.lineTo(x + 14, y); ctx.stroke(); pts.push({ x, y, html: `${condName(c)}<br>fit ${val(c, 'opt').toFixed(2)}` }); }
-    else MODELS.forEach((m, j) => { const xv = x + (j - 1) * 12, y = Y(val(c, m.key)); marker(ctx, xv, y, 5, m.shape, mcol(m.key)); pts.push({ x: xv, y, html: `${condName(c)}<br>${m.name}: ${val(c, m.key).toFixed(2)}` }); });
-    const d = dat(i); if (d != null) { const y = Y(d); marker(ctx, x, y, 5.5, 'circle', TK.data, true); pts.push({ x, y, html: `${condName(c)}<br>data ${d.toFixed(2)}` }); }
-  });
-  cv._hit = nearest(pts);
-}
-function drawPsy(cv, tr, c, f) {
-  const g = prep(cv); if (!g) return; const { ctx, w, h } = g;
-  const L = 34, R = 8, T = 8, B = 30, pw = w - L - R, ph = h - T - B;
-  const X = o => L + (o + OFF_LIM + 0.05) / (2 * OFF_LIM + 0.1) * pw, Y = p => T + (1 - p) * ph;
-  ctx.strokeStyle = TK.rule; ctx.lineWidth = 1;
-  for (const p of [0, .5, 1]) { ctx.beginPath(); ctx.moveTo(L, Y(p)); ctx.lineTo(L + pw, Y(p)); ctx.stroke(); txt(ctx, p.toFixed(1), L - 5, Y(p), 'right', 'middle', TK.ink3, 10); }
-  for (const v of [0.5, 1, 2, 3, 5]) { const o = toLog(v) - ST; if (Math.abs(o) <= OFF_LIM) txt(ctx, String(v), X(o), T + ph + 4, 'center', 'top', TK.ink3, 10); }
-  txt(ctx, 'reference speed (°/s)', L + pw / 2, h - 1, 'center', 'bottom', TK.ink2, 10);
-  const curve = (model, col) => { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k <= 80; k++) { const o = -OFF_LIM + 2 * OFF_LIM * k / 80, y = Y(pRef(c, o, f, model)); k ? ctx.lineTo(X(o), y) : ctx.moveTo(X(o), y); } ctx.stroke(); };
-  if (!c.pred) curve('opt', TK.ink3); else MODELS.forEach(m => curve(m.key, mcol(m.key)));
-  const grp = {}; for (const t of tr) { const k = (Math.round(t.off / 0.15) * 0.15).toFixed(3); (grp[k] = grp[k] || [0, 0])[0]++; if (t.rf) grp[k][1]++; }
-  const pts = [];
-  for (const [k, [n, s]] of Object.entries(grp)) { const x = X(+k), y = Y(s / n); marker(ctx, x, y, 2.5 + Math.min(4, Math.sqrt(n)), 'circle', TK.data); pts.push({ x, y, html: `reference ${toLin(ST + +k).toFixed(2)} °/s<br>${s}/${n} “reference faster”` }); }
-  cv._hit = nearest(pts);
-}
-
-/* ---------------- tooltips, tabs, theme, startup ---------------- */
-const tip = $('#tip');
-document.addEventListener('pointermove', e => {
-  const cv = e.target, html = cv && cv.tagName === 'CANVAS' && cv._hit ? cv._hit(e.offsetX, e.offsetY) : null;
-  if (!html) { tip.style.opacity = 0; return; }
-  tip.innerHTML = html; tip.style.opacity = 1;
-  const r = tip.getBoundingClientRect(); let x = e.clientX + 14, y = e.clientY + 14;
-  if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14; if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
-  tip.style.left = x + 'px'; tip.style.top = y + 'px';
-});
-function showTab(name) {
-  if (name !== 'exp' && E.phase !== 'idle' && E.phase !== 'done') abortSession();
-  for (const t of ['exp', 'sim']) { $('#tab-' + t).hidden = t !== name; $('#tabbtn-' + t).setAttribute('aria-selected', String(t === name)); }
-  renderResults();
-}
-for (const t of ['exp', 'sim']) $('#tabbtn-' + t).addEventListener('click', () => showTab(t));
 $('#copy-bib').addEventListener('click', () => {
   const t = $('#bibtex').textContent;
   (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { $('#copy-status').textContent = 'Copied'; })
     .catch(() => { const r = document.createRange(); r.selectNodeContents($('#bibtex')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('#copy-status').textContent = 'Selected; press Ctrl+C to copy'; });
 });
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderResults);
-new MutationObserver(renderResults).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-let rz; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(renderResults); }).observe(document.body);
-
-try { const c = JSON.parse(localStorage.getItem('si-cal') || 'null'); if (c) { $('#e-card').value = c.card; $('#e-dist').value = c.dist; } } catch (e) {}
-syncSetup(); syncSim();
-// open with an example: a long simulated session of an optimally integrating observer
-{ const T = { ...simTruth(), nPer: 120 }, tr = simSession(T); showResults(`Example: simulated observer, ${tr.length} trials`, tr, analyze(tr), T); }
 </script>
 </body>
 </html>
